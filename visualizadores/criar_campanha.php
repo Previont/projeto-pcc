@@ -29,9 +29,9 @@ try {
 }
 
 // Recupera e limpa as mensagens da sessão.
-$erro = $_SESSION['erro'] ?? '';
-$sucesso = $_SESSION['sucesso'] ?? '';
-unset($_SESSION['erro'], $_SESSION['sucesso']);
+$erro = $_SESSION['erro_campanha'] ?? '';
+$sucesso = $_SESSION['sucesso_campanha'] ?? '';
+unset($_SESSION['erro_campanha'], $_SESSION['sucesso_campanha']);
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -82,9 +82,6 @@ unset($_SESSION['erro'], $_SESSION['sucesso']);
             
             <label for="descricao">Descrição</label>
             <textarea id="descricao" name="descricao" rows="4" placeholder="Conte a história por trás da sua campanha..." required></textarea>
-            
-            <label for="meta">Meta de Arrecadação (R$)</label>
-            <input type="number" id="meta" name="meta" step="0.01" placeholder="Ex: 5000.00" required>
             
             <label for="meta">Meta de Arrecadação (R$)</label>
             <input type="number" id="meta" name="meta" step="0.01" placeholder="Ex: 5000.00" required>
