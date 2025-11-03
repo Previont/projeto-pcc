@@ -1,0 +1,5 @@
+<?php
+// Configurações do Mercado Pago
+define('MP_PUBLIC_KEY', 'APP_USR-ee2f9f41-b9e8-4031-8fdc-de81c6e69bb1');
+define('MP_ACCESS_TOKEN', 'APP_USR-3839785461156263-110217-7f8f271598e97836be343fb5e28495b1-2959448477');
+?>

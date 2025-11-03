@@ -1,0 +1,443 @@
+/* Reset e estilos base */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Estilos Gerais */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #000000;
+    color: #ffffff;
+    line-height: 1.6;
+}
+
+main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* Seção de Destaques Principal */
+.destaque-principal {
+    width: 100%;
+    padding: 60px 20px;
+    background-color: #000000;
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.destaque-principal h1 {
+    margin-bottom: 40px;
+    font-size: 2.5rem;
+    color: #ffffff;
+    font-weight: bold;
+}
+
+/* Estilos do Carrossel */
+.carousel-container {
+    position: relative;
+    width: 100%; /* Ocupa toda a largura */
+    margin: auto;
+    overflow: hidden;
+}
+
+.carousel-slides {
+    display: flex;
+    transition: transform 0.5s ease-in-out;
+}
+
+.slide {
+    min-width: 100%;
+    box-sizing: border-box;
+    padding: 0 40px; /* Adiciona um respiro nas laterais */
+}
+
+.slide-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
+.slide-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    background: #000000;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.slide-imagem {
+    flex: 1.5; /* Imagem um pouco maior */
+}
+
+.slide-imagem img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Garante que a imagem cubra o espaço */
+    display: block;
+}
+
+.slide-info {
+    flex: 1; /* Texto ocupa o espaço restante */
+    padding: 30px;
+    text-align: left;
+}
+
+.carousel-container .prev,
+.carousel-container .next {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    z-index: 10;
+    transition: background-color 0.3s;
+}
+
+.carousel-container .prev:hover,
+.carousel-container .next:hover {
+    background-color: var(--cor-primaria);
+}
+
+.carousel-container .prev {
+    left: 10px;
+}
+.next {
+    right: 20px;
+    border-radius: 3px 0 0 3px;
+}
+
+.prev {
+    left: 20px;
+}
+
+.prev:hover, .next:hover {
+    background-color: rgba(0, 0, 0, 0.6);
+}
+
+/* Container de Destaques */
+.container-destaques {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 30px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Cards de Destaque */
+.card-destaque {
+    background: #1E1E1E;
+    border: 1px solid #333;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.card-destaque:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+}
+
+.card-destaque img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+.conteudo-card {
+    padding: 20px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.conteudo-card h2 {
+    margin-bottom: 10px;
+    font-size: 1.4rem;
+    color: #ffffff;
+    line-height: 1.3;
+}
+
+.conteudo-card p {
+    margin-bottom: 20px;
+    color: #cccccc;
+    line-height: 1.5;
+    flex: 1;
+}
+
+/* Barra de Progresso */
+.progresso {
+    background-color: #333;
+    border-radius: 8px;
+    height: 10px;
+    margin-bottom: 15px;
+    overflow: hidden;
+}
+
+.barra-progresso {
+    background: linear-gradient(90deg, #42a5f5, #1976d2);
+    height: 100%;
+    border-radius: 8px;
+    transition: width 0.3s ease;
+}
+
+/* Detalhes de Arrecadação */
+.detalhes-arrecadacao {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    font-size: 0.9rem;
+    color: #ffffff;
+}
+
+.detalhes-arrecadacao span:first-child {
+    font-weight: bold;
+    color: #42a5f5;
+}
+
+/* Botão Ver Detalhes */
+.botao-detalhes {
+    display: inline-block;
+    background: linear-gradient(135deg, #42a5f5, #1976d2);
+    color: #ffffff;
+    padding: 12px 24px;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: bold;
+    text-align: center;
+    transition: all 0.3s ease;
+    align-self: flex-start;
+}
+
+.botao-detalhes:hover {
+    background: linear-gradient(135deg, #1976d2, #1565c0);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(66, 165, 245, 0.3);
+}
+
+.campanhas-container {
+    max-width: 1200px;
+    margin: 40px auto;
+}
+
+.campanhas-container h2 {
+    text-align: center;
+    margin-bottom: 40px;
+    font-size: 2.2em;
+    color: #fff;
+}
+
+.todos-projetos {
+    background-color: #000000;
+    margin-top: 2rem;
+    border-top: 1px solid #ffffff;
+    padding-top: 3rem;
+}
+
+/* Grade de Campanhas */
+.campanhas-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+/* Responsividade para o Carrossel */
+@media (max-width: 768px) {
+    .slide-content {
+        flex-direction: column;
+    }
+
+    .slide {
+        padding: 0 15px;
+    }
+
+    .destaque-principal h1 {
+        font-size: 1.8rem;
+    }
+}
+
+.campanha-card-link {
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+}
+
+.campanha-card {
+    background: #1E1E1E;
+    border: 1px solid #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.campanha-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+}
+
+.campanha-card h3 {
+    margin-top: 0;
+    font-size: 1.4em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 5px;
+}
+
+.campanha-card .criador {
+    font-style: italic;
+    color: #ffffff;
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 0.9em;
+}
+
+.progresso-card {
+    background-color: #333;
+    border-radius: 10px;
+    height: 8px;
+    margin-bottom: 5px;
+    overflow: hidden;
+}
+
+.progresso-barra {
+    background-color: #28a745;
+    height: 100%;
+    border-radius: 10px;
+}
+
+.valores-card {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9em;
+    color: #ffffff;
+    margin-bottom: 15px;
+}
+
+.campanha-card .meta {
+    margin-top: auto; /* Alinha a meta na base do card */
+    font-weight: bold;
+    color: #42a5f5;
+    font-size: 1em;
+}
+
+/* Rodapé */
+footer {
+    background-color: #1E1E1E;
+    color: #ffffff;
+    text-align: center;
+    padding: 30px 20px;
+    border-top: 1px solid #333;
+    margin-top: 60px;
+}
+
+footer p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #cccccc;
+}
+
+/* Design Responsivo */
+@media (max-width: 768px) {
+    main {
+        padding: 0 15px;
+    }
+
+    .destaque-principal {
+        padding: 40px 15px;
+    }
+
+    .destaque-principal h1 {
+        font-size: 2rem;
+        margin-bottom: 30px;
+    }
+
+    .container-destaques {
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 20px;
+    }
+
+    .carrossel-secao,
+    .todas-as-campanhas {
+        padding: 40px 15px;
+    }
+
+    .carrossel-secao h2,
+    .todas-as-campanhas h2 {
+        font-size: 1.8rem;
+        margin-bottom: 30px;
+    }
+
+    .grade-campanhas {
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 20px;
+    }
+
+    .card-destaque,
+    .card-campanha {
+        margin: 0 auto;
+        max-width: 100%;
+    }
+
+    .conteudo-card,
+    .info-campanha {
+        padding: 15px;
+    }
+
+    .conteudo-card h2,
+    .info-campanha h3 {
+        font-size: 1.2rem;
+    }
+
+    .botao-detalhes,
+    .botao-saiba-mais {
+        padding: 10px 20px;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .destaque-principal h1 {
+        font-size: 1.8rem;
+    }
+
+    .container-destaques,
+    .grade-campanhas {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .carrossel-secao h2,
+    .todas-as-campanhas h2 {
+        font-size: 1.6rem;
+    }
+
+    .card-carrossel {
+        min-width: 250px;
+    }
+
+    .botao-carrossel {
+        padding: 12px;
+        font-size: 16px;
+    }
+}

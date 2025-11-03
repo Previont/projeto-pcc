@@ -1,0 +1,483 @@
+/* Estilos para a página Minhas Campanhas */
+
+/* Cabeçalho da página */
+.cabecalho-pagina {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.cabecalho-pagina h1 {
+    margin: 0;
+    color: #333;
+    font-size: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.cabecalho-pagina h1 i {
+    color: #007cba;
+}
+
+/* Mensagens de feedback */
+.mensagem {
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.mensagem-erro {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.mensagem-sucesso {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+/* Container das campanhas */
+.container-campanhas {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+/* Cards das campanhas */
+.card-campanha {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: all 0.3s ease;
+    border: 1px solid #e0e0e0;
+}
+
+.card-campanha:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Cabeçalho do card */
+.card-header {
+    padding: 20px 20px 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.card-header h3 {
+    margin: 0;
+    color: #333;
+    font-size: 1.3rem;
+    flex: 1;
+    min-width: 0;
+}
+
+.status {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.status-ativa {
+    background-color: #e3f2fd;
+    color: #1565c0;
+}
+
+.status-em-andamento {
+    background-color: #fff3e0;
+    color: #ef6c00;
+}
+
+.status-meta-atingida {
+    background-color: #e8f5e8;
+    color: #2e7d32;
+}
+
+/* Corpo do card */
+.card-body {
+    padding: 0 20px 15px;
+}
+
+.descricao {
+    color: #666;
+    line-height: 1.5;
+    margin-bottom: 20px;
+}
+
+/* Progresso da campanha */
+.progresso-container {
+    margin-bottom: 15px;
+}
+
+.progresso-info {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+}
+
+.arrecadado {
+    font-weight: 600;
+    color: #28a745;
+}
+
+.meta {
+    color: #666;
+}
+
+.barra-progresso {
+    height: 8px;
+    background-color: #e0e0e0;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 5px;
+}
+
+.progresso-atual {
+    height: 100%;
+    background: linear-gradient(90deg, #007cba, #0056b3);
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+.porcentagem {
+    text-align: right;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #007cba;
+}
+
+/* Informações adicionais */
+.info-meta {
+    color: #888;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* Ações do card */
+.card-actions {
+    padding: 15px 20px;
+    background-color: #f8f9fa;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+/* Botões */
+.btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    text-decoration: none;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    transition: all 0.3s ease;
+    text-align: center;
+    flex: 1;
+    justify-content: center;
+    min-width: fit-content;
+}
+
+.btn-primary {
+    background-color: #007cba;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+    transform: translateY(-2px);
+}
+
+.btn-info {
+    background-color: #17a2b8;
+    color: white;
+}
+
+.btn-info:hover {
+    background-color: #138496;
+}
+
+.btn-warning {
+    background-color: #ffc107;
+    color: #212529;
+}
+
+.btn-warning:hover {
+    background-color: #e0a800;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    color: white;
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background-color: #545b62;
+}
+
+/* Estado sem campanhas */
+.sem-campanhas {
+    text-align: center;
+    padding: 60px 20px;
+    color: #666;
+    grid-column: 1 / -1;
+}
+
+.sem-campanhas i {
+    font-size: 4rem;
+    color: #ccc;
+    margin-bottom: 20px;
+    display: block;
+}
+
+.sem-campanhas h3 {
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.sem-campanhas p {
+    margin-bottom: 30px;
+    font-size: 1.1rem;
+}
+
+/* Botões de navegação */
+.botoes-navegacao {
+    text-align: center;
+    margin-top: 30px;
+}
+
+/* Modal de confirmação */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    max-width: 500px;
+    width: 90%;
+    animation: modalShow 0.3s ease;
+}
+
+@keyframes modalShow {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.modal-header {
+    padding: 20px 20px 10px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.modal-header h3 {
+    margin: 0;
+    color: #dc3545;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.modal-body {
+    padding: 20px;
+}
+
+.modal-body p {
+    margin: 0 0 15px 0;
+    line-height: 1.5;
+}
+
+.modal-body .aviso {
+    color: #856404;
+    background-color: #fff3cd;
+    padding: 10px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+}
+
+.modal-actions {
+    padding: 15px 20px 20px;
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .cabecalho-pagina {
+        flex-direction: column;
+        align-items: stretch;
+        text-align: center;
+    }
+    
+    .cabecalho-pagina h1 {
+        font-size: 1.5rem;
+        justify-content: center;
+    }
+    
+    .container-campanhas {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    
+    .card-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+    }
+    
+    .status {
+        align-self: flex-start;
+    }
+    
+    .card-actions {
+        flex-direction: column;
+    }
+    
+    .btn {
+        flex: none;
+        width: 100%;
+    }
+    
+    .modal-content {
+        margin: 20px;
+        width: calc(100% - 40px);
+    }
+    
+    .modal-actions {
+        flex-direction: column;
+    }
+    
+    .modal-actions .btn {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 10px;
+    }
+    
+    .card-campanha {
+        margin: 0;
+    }
+    
+    .card-header,
+    .card-body,
+    .card-actions {
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+    
+    .progresso-info {
+        flex-direction: column;
+        gap: 5px;
+    }
+}
+
+/* Animações de carregamento */
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+.btn:disabled:hover {
+    transform: none !important;
+}
+
+/* Indicador de carregamento */
+.loading {
+    position: relative;
+    color: transparent;
+}
+
+.loading::after {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    top: 50%;
+    left: 50%;
+    margin-left: -8px;
+    margin-top: -8px;
+    border: 2px solid #ffffff;
+    border-radius: 50%;
+    border-top-color: transparent;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Melhorias de acessibilidade */
+.btn:focus {
+    outline: 2px solid #007cba;
+    outline-offset: 2px;
+}
+
+.modal:focus {
+    outline: none;
+}
+
+/* Estados de hover melhorados */
+.card-campanha:hover .progresso-atual {
+    background: linear-gradient(90deg, #0056b3, #003d82);
+}
+
+.status:hover {
+    transform: scale(1.05);
+    transition: transform 0.2s ease;
+}

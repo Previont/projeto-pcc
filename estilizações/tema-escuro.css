@@ -1,0 +1,97 @@
+/* Tema Escuro Global - v2 */
+html, body {
+    background-color: #000000 !important;
+    color: #ffffff;
+}
+
+body {
+    min-height: 100vh;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: #ffffff !important;
+}
+
+p, span, div {
+    color: #ffffff;
+}
+
+a {
+    color: #4dabf7;
+}
+
+a:hover {
+    color: #74c0fc;
+}
+
+/* --- Cabeçalho --- */
+header, .header {
+    background-color: #000000 !important;
+    color: #ffffff;
+}
+
+.user-menu a:hover {
+    background-color: #333 !important;
+}
+
+/* --- Containers e Cartões --- */
+.container, .profile-container, .settings-container, .campanhas-container, .destaques-principal, main, .container-login {
+    background-color: #000000 !important; /* Forçar fundo preto */
+    color: #ffffff;
+}
+
+.profile-card, .campanha-card, .slide-content, .settings-content, .container > form, .login-container .card, .card, .form-container {
+    background-color: #1e1e1e !important;
+    border: 1px solid #333 !important;
+    box-shadow: none !important;
+    color: #ffffff;
+}
+
+.settings-menu {
+    background-color: #121212 !important;
+    color: #ffffff;
+}
+
+input[type="number"],
+textarea {
+    background-color: #2c2c2c !important;
+    color: #ffffff !important;
+    border: 1px solid #555 !important;
+}
+
+input::placeholder,
+textarea::placeholder {
+    color: #777 !important;
+}
+
+/* --- Botões --- */
+button, .btn-submit, .btn-edit, .btn-back, .link-voltar, .btn-login, .btn-register, .btn-primary {
+    background-color: #4dabf7;
+}
+
+.progresso {
+    background-color: #4dabf7;
+}
+
+/* --- Carrossel --- */
+.carousel-container .prev, .carousel-container .next {
+    background-color: rgba(30, 30, 30, 0.7) !important;
+}
+
+/* --- Correções Específicas --- */
+.login-container .card-header, .login-container .card-body {
+    background-color: transparent !important;
+    color: #ffffff;
+}
+
+.nenhuma-campanha, .nenhuma-campanha a {
+    color: #ffffff;
+}
+
+:root {
+    --cor-primaria: #006400; /* Verde Escuro */
+    --cor-primaria-hover: #004d00; /* Verde mais escuro para hover */
+    --cor-texto-botao: #ffffff; /* Branco para o texto do botão */
+}
+
+body.dark-theme {

@@ -1,0 +1,155 @@
+body {
+    font-family: sans-serif;
+    background-color: #000000; /* Fundo preto */
+    color: #E0E0E0; /* Texto claro */
+    padding: 20px;
+}
+
+.container {
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 40px;
+    background-color: #1E1E1E; /* Fundo do container escuro */
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    border: 1px solid #333; /* Borda sutil */
+}
+
+h2 {
+    margin-bottom: 30px;
+}
+
+.perfil-info {
+    text-align: left;
+    margin-top: 20px;
+}
+
+.perfil-info p {
+    font-size: 1.1em;
+    margin: 15px 0;
+}
+
+.perfil-info strong {
+    color: #BDBDBD; /* Cinza claro para destaque */
+}
+
+.link-voltar {
+    display: inline-block;
+    margin-top: 30px;
+    color: #42a5f5; /* Azul claro para links */
+    text-decoration: none;
+    font-size: 1.1em;
+}
+
+.link-voltar:hover {
+    text-decoration: underline;
+}
+
+/* Estilos para a página de perfil do usuário */
+
+.container-perfil {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 40px 20px;
+    min-height: calc(100vh - 150px); /* Ajusta a altura para preencher a tela */
+}
+
+.cartao-perfil {
+    background-color: #1E1E1E;
+    border: 1px solid #333;
+    border-radius: 10px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+    width: 100%;
+    max-width: 650px;
+    overflow: hidden;
+}
+
+.cabecalho-perfil {
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    padding: 40px 20px;
+    text-align: center;
+    color: #fff;
+}
+
+.nome-perfil {
+    margin: 10px 0 0;
+    font-size: 2.2rem;
+    font-weight: bold;
+}
+
+.corpo-perfil {
+    padding: 30px 40px;
+}
+
+.secao-perfil {
+    margin-bottom: 30px;
+}
+
+.secao-perfil:last-child {
+    margin-bottom: 0;
+}
+
+.secao-perfil h2 {
+    font-size: 1.3rem;
+    color: #007bff;
+    border-bottom: 2px solid #333;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+}
+
+.secao-perfil h2 .fas {
+    margin-right: 12px;
+    font-size: 1.5rem;
+}
+
+.secao-perfil p {
+    font-size: 1.1rem;
+    line-height: 1.7;
+    margin: 0;
+    color: #E0E0E0;
+}
+
+.contato-perfil .fas {
+    margin-right: 10px;
+    color: #007bff;
+}
+
+.rodape-perfil {
+    background-color: #252525;
+    padding: 20px;
+    text-align: center;
+    border-top: 1px solid #333;
+}
+
+.btn-editar, .btn-voltar {
+    text-decoration: none;
+    color: #fff;
+    padding: 12px 25px;
+    border-radius: 5px;
+    margin: 0 10px;
+    font-weight: bold;
+    transition: background-color 0.3s, transform 0.2s;
+    display: inline-block;
+}
+
+.btn-editar {
+    background-color: #28a745; /* Verde */
+}
+
+.btn-editar:hover {
+    background-color: #218838;
+    transform: translateY(-2px);
+}
+
+.btn-voltar {
+    background-color: #6c757d; /* Cinza */
+}
+
+.btn-voltar:hover {
+    background-color: #5a6268;
+    transform: translateY(-2px);
+}

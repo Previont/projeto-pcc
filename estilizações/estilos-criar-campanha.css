@@ -1,0 +1,251 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #000000;
+    color: #ffffff;
+}
+
+.container {
+    max-width: 700px;
+    margin: 40px auto;
+    padding: 40px;
+    background-color: #1E1E1E; /* Fundo do container escuro */
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    border: 1px solid #333; /* Borda sutil */
+}
+
+h2 {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+input[type="text"],
+input[type="number"],
+textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #444; /* Borda do input mais escura */
+    border-radius: 4px;
+    box-sizing: border-box;
+    background-color: #2C2C2C; /* Fundo do input escuro */
+    color: #E0E0E0; /* Texto do input claro */
+}
+
+textarea {
+    resize: vertical;
+    min-height: 120px;
+}
+
+input:focus,
+textarea:focus {
+    outline: none;
+    border-color: #42a5f5; /* Destaque azul claro no foco */
+}
+
+.form-group button {
+    width: 100%;
+    padding: 12px;
+    background-color: var(--cor-primaria);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+.form-group button:hover {
+    background-color: var(--cor-primaria-hover);
+}
+
+.error-message {
+    display: block;
+    text-align: center;
+    margin-top: 20px;
+    color: #BDBDBD; /* Texto cinza claro */
+    text-decoration: none;
+}
+
+.link-voltar:hover {
+    text-decoration: underline;
+}
+
+/* Estilos para a Seção de Itens */
+.itens-secao {
+    margin-top: 30px;
+    padding: 25px;
+    background-color: #252525;
+    border-radius: 8px;
+    border: 1px solid #444;
+}
+
+.itens-secao h3 {
+    color: #42a5f5;
+    margin-bottom: 10px;
+    font-size: 1.3em;
+}
+
+.subtitulo-itens {
+    color: #BDBDBD;
+    margin-bottom: 20px;
+    font-size: 0.9em;
+    line-height: 1.4;
+}
+
+#lista-itens {
+    margin-bottom: 20px;
+}
+
+.item-campanha {
+    background-color: #2C2C2C;
+    border: 1px solid #555;
+    border-radius: 6px;
+    padding: 20px;
+    margin-bottom: 15px;
+    position: relative;
+    transition: border-color 0.3s ease;
+}
+
+.item-campanha:hover {
+    border-color: #42a5f5;
+}
+
+.item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #444;
+}
+
+.item-header h4 {
+    color: #42a5f5;
+    margin: 0;
+    font-size: 1.1em;
+}
+
+.btn-remover-item {
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease;
+    font-size: 14px;
+}
+
+.btn-remover-item:hover {
+    background-color: #c0392b;
+}
+
+.item-campos {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.item-campos .form-group {
+    margin-bottom: 0;
+}
+
+.item-campos .form-group:last-child {
+    grid-column: 1 / -1;
+}
+
+.item-campos label {
+    color: #E0E0E0;
+    font-weight: 600;
+    margin-bottom: 5px;
+    display: block;
+}
+
+.item-campos input,
+.item-campos textarea {
+    background-color: #3C3C3C;
+    border: 1px solid #666;
+    color: #E0E0E0;
+    padding: 10px;
+    border-radius: 4px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.item-campos input:focus,
+.item-campos textarea:focus {
+    outline: none;
+    border-color: #42a5f5;
+    box-shadow: 0 0 5px rgba(66, 165, 245, 0.3);
+}
+
+.btn-adicionar-item {
+    background-color: #27ae60;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 12px 20px;
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background-color 0.3s ease;
+    width: 100%;
+    justify-content: center;
+}
+
+.btn-adicionar-item:hover {
+    background-color: #229954;
+}
+
+.btn-adicionar-item i {
+    font-size: 12px;
+}
+
+/* Responsividade para a seção de itens */
+@media (max-width: 768px) {
+    .item-campos {
+        grid-template-columns: 1fr;
+    }
+    
+    .item-campos .form-group {
+        grid-column: 1;
+    }
+    
+    .itens-secao {
+        padding: 20px 15px;
+    }
+    
+    .item-campanha {
+        padding: 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    .item-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+    .btn-remover-item {
+        align-self: flex-end;
+    }
+}

@@ -1,0 +1,76 @@
+body {
+    font-family: sans-serif;
+    background-color: #000000; /* Fundo preto */
+    color: #E0E0E0; /* Texto claro */
+    padding: 20px;
+}
+
+.container {
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 40px;
+    background-color: #1E1E1E; /* Fundo do container escuro */
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    border: 1px solid #333; /* Borda sutil */
+}
+
+h2 {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #444; /* Borda do input mais escura */
+    border-radius: 4px;
+    box-sizing: border-box;
+    background-color: #2C2C2C; /* Fundo do input escuro */
+    color: #E0E0E0; /* Texto do input claro */
+}
+
+input:focus {
+    outline: none;
+    border-color: #42a5f5; /* Destaque azul claro no foco */
+}
+
+form button {
+    width: 100%;
+    padding: 10px;
+    background-color: var(--cor-primaria);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 10px;
+}
+
+form button:hover {
+    background-color: var(--cor-primaria-hover);
+}
+
+.message {
+    display: block;
+    text-align: center;
+    margin-top: 20px;
+    color: #BDBDBD; /* Texto cinza claro */
+    text-decoration: none;
+}
+
+.link-voltar:hover {
+    text-decoration: underline;
+}
