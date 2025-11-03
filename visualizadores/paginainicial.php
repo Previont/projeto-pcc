@@ -1,6 +1,11 @@
 <?php
 session_start();
-require_once '../modelos/configuraçõesdeconexão.php';
+$config_file = '../configurações/configuraçõesdeconexão.php';
+if (file_exists($config_file)) {
+    require_once $config_file;
+} else {
+    die('Erro: Arquivo de configuração não encontrado em ' . $config_file);
+}
 
 // Verifica se o usuário está logado
 $usuario_esta_logado = isset($_SESSION['id_usuario']);
@@ -156,7 +161,7 @@ $todas_as_campanhas = $stmt_todas->fetchAll();
     </main>
 
     <footer>
-        <p>&copy; 2024 Projeto PCC. Todos os direitos reservados.</p>
+        <p>&copy; 2025 Projeto PCC. Todos os direitos reservados.</p>
     </footer>
 
     <script src="../scripts/script-menu.js"></script>
