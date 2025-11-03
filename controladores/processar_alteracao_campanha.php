@@ -1,6 +1,11 @@
 <?php
 session_start();
-require_once __DIR__ . '/../modelos/configuraçõesdeconexão.php';
+$config_file = __DIR__ . '/../configurações/configuraçõesdeconexão.php';
+if (file_exists($config_file)) {
+    require_once $config_file;
+} else {
+    die('Erro: Arquivo de configuração não encontrado em ' . $config_file);
+}
 
 // Validação de segurança
 if (!isset($_SESSION['id_usuario'])) {

@@ -1,6 +1,11 @@
 <?php
 session_start();
-require_once '../modelos/configuraçõesdeconexão.php';
+$config_file = '../configurações/configuraçõesdeconexão.php';
+if (file_exists($config_file)) {
+    require_once $config_file;
+} else {
+    die('Erro: Arquivo de configuração não encontrado em ' . $config_file);
+}
 require_once '../configurações/mercadopago_config.php';
 ?>
 <!DOCTYPE html>

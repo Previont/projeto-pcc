@@ -1,7 +1,12 @@
 <?php
 session_start();
 // Inclui o arquivo de configuração da conexão com o banco de dados.
-require_once __DIR__ . '/../modelos/configuraçõesdeconexão.php';
+$config_file = __DIR__ . '/../configurações/configuraçõesdeconexão.php';
+if (file_exists($config_file)) {
+    require_once $config_file;
+} else {
+    die('Erro: Arquivo de configuração não encontrado em ' . $config_file);
+}
 
 // Protege o script: verifica se o usuário está logado e se o método da requisição é POST.
 if (!isset($_SESSION['id_usuario']) || $_SERVER['REQUEST_METHOD'] !== 'POST') {
