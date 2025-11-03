@@ -29,10 +29,10 @@ $descricao_campanha = trim(filter_input(INPUT_POST, 'descricao', FILTER_SANITIZE
 $meta_arrecadacao = filter_input(INPUT_POST, 'meta', FILTER_VALIDATE_FLOAT);
 
 // Coleta dados dos itens (se enviados)
-$itens_nome = $_POST['itens']['nome'] ?? [];
-$itens_descricao = $_POST['itens']['descricao'] ?? [];
-$itens_valor = $_POST['itens']['valor'] ?? [];
-$itens_imagem = $_POST['itens']['imagem'] ?? [];
+$itens_nome = isset($_POST['itens']['nome']) ? $_POST['itens']['nome'] : [];
+$itens_descricao = isset($_POST['itens']['descricao']) ? $_POST['itens']['descricao'] : [];
+$itens_valor = isset($_POST['itens']['valor']) ? $_POST['itens']['valor'] : [];
+$itens_imagem = isset($_POST['itens']['imagem']) ? $_POST['itens']['imagem'] : [];
 
 // 3. Validação dos Dados Coletados
 if (empty($titulo_campanha) || empty($descricao_campanha) || $meta_arrecadacao === false || $meta_arrecadacao <= 0) {
@@ -132,8 +132,11 @@ try {
 } catch (PDOException $e) {
     // Em um cenário de produção, o erro deveria ser registrado em um log.
     // Para o usuário, uma mensagem genérica é mais apropriada.
-    $_SESSION['erro_campanha'] = "Ocorreu um erro ao criar a campanha. Por favor, tente novamente.";
-    // die("Erro ao criar a campanha: " . $e->getMessage()); // Apenas para depuração
+    $_SESSION['erro_campanha'] = "Erro ao criar campanha: " . $e->getMessage();
+    
+    // Log do erro para depuração
+    error_log("Erro ao criar campanha: " . $e->getMessage() . " | Arquivo: " . $e->getFile() . " | Linha: " . $e->getLine());
+    
     header("Location: ../visualizadores/criar_campanha.php");
     exit;
 }
