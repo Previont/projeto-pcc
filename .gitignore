@@ -1,0 +1,24 @@
+# Ambiente e secrets
+.env
+configurações/configuraçõesdeconexão.php
+
+# Uploads dinâmicos (mantém imagens padrão)
+uploads/itens/
+
+# Build outputs e mapas de fonte
+*.map
+
+# Logs e temporários
+*.log
+*.tmp
+*.bak
+
+# SO / Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Node/Composer (se presentes)
+node_modules/
+vendor/
