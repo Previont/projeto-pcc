@@ -1,4 +1,8 @@
 // Sistema de configurações otimizado
+// Objetivo: gerenciar navegação de seções, formulários de usuário/endereço e busca de CEP.
+// Termos:
+// - "Debounce": técnica para atrasar uma ação até que o usuário termine de digitar/clicar.
+// - "Cache": guardar dados já obtidos para reutilizar sem nova consulta.
 document.addEventListener('DOMContentLoaded', function() {
     'use strict';
     
@@ -6,17 +10,22 @@ document.addEventListener('DOMContentLoaded', function() {
     const linksMenu = document.querySelectorAll('.menu-configuracoes a');
     const secoesConteudo = document.querySelectorAll('.secao-conteudo');
     const containerFormularioEndereco = document.getElementById('container-formulario-endereco');
-    const containerFormularioPagamento = document.getElementById('container-formulario-pagamento');
     
     // Inicialização otimizada
     initMenuNavegacao();
     initFormularios();
     initCepService();
     initPerformanceMonitoring();
+
+    // Utilitário de reset com suporte a Utils global (fallback local)
+    function safeReset(form) {
+        if (window.Utils && typeof window.Utils.safeReset === 'function') {
+            return window.Utils.safeReset(form);
+        }
+        if (form && typeof form.reset === 'function') form.reset();
+    }
     
-    /**
-     * Inicializa o sistema de navegação do menu
-     */
+    /** Inicializa o sistema de navegação do menu */
     function initMenuNavegacao() {
         if (!linksMenu.length) return;
         
@@ -47,9 +56,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    /**
-     * Alterna entre seções do menu com animação
-     */
+    /** Alterna entre seções do menu com animação */
     function alternarSecao(linkAtivo) {
         const idAlvo = linkAtivo.getAttribute('data-target');
         
@@ -79,18 +86,13 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    /**
-     * Inicializa todos os formulários
-     */
+    /** Inicializa todos os formulários */
     function initFormularios() {
         initFormularioEndereco();
-        initFormularioPagamento();
         initFormularioUsuario();
     }
     
-    /**
-     * Gerencia formulário de endereço
-     */
+    /** Gerencia formulário de endereço */
     function initFormularioEndereco() {
         const btnAdicionarEndereco = document.getElementById('btn-adicionar-endereco');
         const btnCancelarEdicao = document.getElementById('cancelar-edicao');
@@ -107,38 +109,14 @@ document.addEventListener('DOMContentLoaded', function() {
         if (btnCancelarEdicao) {
             btnCancelarEdicao.addEventListener('click', function() {
                 ocultarFormulario(containerFormularioEndereco, btnAdicionarEndereco);
-                if (formularioEndereco) formularioEndereco.reset();
+                safeReset(formularioEndereco);
             });
         }
     }
     
-    /**
-     * Gerencia formulário de pagamento
-     */
-    function initFormularioPagamento() {
-        const btnAdicionarPagamento = document.getElementById('btn-adicionar-pagamento');
-        const btnCancelarPagamento = document.getElementById('cancelar-edicao-pagamento');
-        const formularioPagamento = containerFormularioPagamento ? containerFormularioPagamento.querySelector('form') : null;
-        
-        if (!btnAdicionarPagamento) return;
-        
-        // Mostrar formulário
-        btnAdicionarPagamento.addEventListener('click', function() {
-            mostrarFormulario(containerFormularioPagamento, btnAdicionarPagamento);
-        });
-        
-        // Cancelar edição
-        if (btnCancelarPagamento) {
-            btnCancelarPagamento.addEventListener('click', function() {
-                ocultarFormulario(containerFormularioPagamento, btnAdicionarPagamento);
-                if (formularioPagamento) formularioPagamento.reset();
-            });
-        }
-    }
     
-    /**
-     * Gerencia formulário de dados do usuário
-     */
+    
+    /** Gerencia formulário de dados do usuário */
     function initFormularioUsuario() {
         const formUsuario = document.querySelector('form[action="configuracoes.php"]');
         if (!formUsuario) return;
@@ -151,9 +129,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    /**
-     * Mostra formulário com animação
-     */
+    /** Mostra formulário com animação */
     function mostrarFormulario(container, btnOrigem, titulo = '') {
         if (titulo) {
             const tituloElement = document.getElementById('titulo-formulario');
@@ -182,9 +158,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    /**
-     * Oculta formulário com animação
-     */
+    /** Oculta formulário com animação */
     function ocultarFormulario(container, btnOrigem) {
         container.style.transition = 'all 0.3s ease';
         container.style.opacity = '0';
@@ -197,9 +171,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 300);
     }
     
-    /**
-     * Inicializa serviço de CEP com cache
-     */
+    /** Inicializa serviço de CEP com cache */
     function initCepService() {
         const campoCep = document.getElementById('cep');
         if (!campoCep) return;
@@ -226,9 +198,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    /**
-     * Busca CEP com feedback visual
-     */
+    /** Busca CEP com feedback visual */
     function buscarCep(cep, cache) {
         const campoCep = document.getElementById('cep');
         const originalBg = campoCep.style.backgroundColor;
@@ -259,9 +229,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    /**
-     * Preenche campos do endereço
-     */
+    /** Preenche campos do endereço */
     function preencherEndereco(data) {
         const campos = {
             'logradouro': data.logradouro,
@@ -282,9 +250,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    /**
-     * Sistema de mensagens otimizado
-     */
+    /** Sistema de mensagens otimizado */
     function mostrarMensagem(texto, tipo = 'info') {
         // Remove mensagens anteriores
         const mensagensAnteriores = document.querySelectorAll('.mensagem');
@@ -309,10 +275,12 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 5000);
     }
     
-    /**
-     * Sistema de loading para botões
-     */
+    /** Sistema de loading para botões */
     function mostrarLoading(botao, texto = 'Carregando...') {
+        // Usa utilitário global, se disponível, mantendo o fallback local
+        if (window.Utils && typeof window.Utils.mostrarLoading === 'function') {
+            return window.Utils.mostrarLoading(botao, texto);
+        }
         const textoOriginal = botao.textContent;
         botao.disabled = true;
         botao.innerHTML = `
@@ -326,18 +294,11 @@ document.addEventListener('DOMContentLoaded', function() {
         };
     }
     
-    /**
-     * Monitoramento de performance
-     */
+    /** Monitoramento de performance */
     function initPerformanceMonitoring() {
         // Tempo de carregamento da página
         window.addEventListener('load', function() {
             const loadTime = performance.now();
-            console.log(`Página carregada em ${loadTime.toFixed(2)}ms`);
-            
-            if (loadTime > 2000) {
-                console.warn('Tempo de carregamento acima do ideal (2s)');
-            }
         });
         
         // Monitora tempo de resposta das interações
@@ -349,7 +310,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 setTimeout(() => {
                     const responseTime = performance.now() - start;
                     if (responseTime > 100) {
-                        console.warn(`Resposta lenta na navegação: ${responseTime.toFixed(2)}ms`);
                     }
                 }, 0);
             }

@@ -1,38 +1,48 @@
 <?php
 session_start();
-// Recupera a mensagem de erro da sessão, se houver.
+// Objetivo desta página: exibir o formulário de login e mostrar mensagens de erro/sucesso.
+// Dica: usamos sessão para transportar mensagens entre requisições (como um bilhete temporário).
 $mensagem_erro = $_SESSION['erro'] ?? '';
-// Limpa a mensagem de erro da sessão para que não seja exibida novamente.
-unset($_SESSION['erro']);
+unset($_SESSION['erro']); // limpa para não repetir mensagem ao recarregar
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Projeto PCC</title>
+        <title>Entrar - origoidea</title>
+    <link rel="stylesheet" href="../estilizações/estilos-global.css">
     <link rel="stylesheet" href="../estilizações/estilos-login.css">
+    <script src="../scripts/utils.js" defer></script>
 </head>
 <body>
+    <!-- Cabeçalho da página: logo e navegação básica -->
     <header>
         <div class="logo">
-            <h1><a href="paginainicial.php">Projeto PCC</a></h1>
+            <h1><a href="paginainicial.php">origoidea</a></h1>
         </div>
         <nav>
             <a href="paginainicial.php">Página Inicial</a>
         </nav>
     </header>
 
+    <!-- Conteúdo principal: cartão com formulário de login -->
     <main>
         <div class="container-login">
-            <h1>Login</h1>
+        <h1>Entrar</h1>
             <?php if ($mensagem_erro): ?>
+                <!-- Mensagem de erro didática: exemplo de feedback ao usuário -->
                 <div class="mensagem-erro"><?php echo htmlspecialchars($mensagem_erro); ?></div>
             <?php endif; ?>
             
+            <!-- Formulário de login
+                 Campos obrigatórios:
+                 - Usuário ou e-mail: como identificar a conta
+                 - Senha: a chave de acesso
+                 Erro comum: digitar e-mail no campo de usuário — ambos funcionam aqui. -->
             <form action="../controladores/processar_login.php" method="post">
                 <div class="grupo-formulario">
-                    <label for="usuario">Usuário ou Email:</label>
+            <label for="usuario">Usuário ou E-mail:</label>
                     <input type="text" id="usuario" name="usuario" required>
                 </div>
                 <div class="grupo-formulario">
@@ -45,8 +55,9 @@ unset($_SESSION['erro']);
         </div>
     </main>
 
+    <!-- Rodapé simples com direitos autorais -->
     <footer>
-        <p>&copy; 2025 Projeto PCC. Todos os direitos reservados.</p>
+        <p>&copy; 2025 origoidea. Todos os direitos reservados.</p>
     </footer>
 </body>
 </html>

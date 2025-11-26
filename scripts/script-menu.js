@@ -1,3 +1,5 @@
+// Menu do usuário (mostrar/esconder ao passar o mouse)
+// Dica: usamos pequeno atraso para evitar "piscar" ao mover o cursor.
 document.addEventListener('DOMContentLoaded', function() {
     const iconeUsuario = document.getElementById('iconeUsuario');
     const menuUsuario = document.getElementById('menuUsuario');

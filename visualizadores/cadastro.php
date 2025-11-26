@@ -11,14 +11,17 @@ unset($_SESSION['erro_cadastro'], $_SESSION['usuario_ja_existe']);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cadastro - Projeto PCC</title>
+    <title>Cadastro - origoidea</title>
+    <link rel="stylesheet" href="../estilizações/estilos-global.css">
     <link rel="stylesheet" href="../estilizações/estilos-cadastro.css">
+    <script src="../scripts/utils.js" defer></script>
     <script src="../scripts/script-cadastro.js" defer></script>
 </head>
 <body>
+    <!-- Cabeçalho com navegação simples -->
     <header>
         <div class="logo">
-            <h1>Projeto PCC</h1>
+            <h1>origoidea</h1>
         </div>
         <nav>
             <a href="paginainicial.php">Página Inicial</a>
@@ -32,11 +35,17 @@ unset($_SESSION['erro_cadastro'], $_SESSION['usuario_ja_existe']);
                 <div class="alerta-erro">
                     <p><?php echo htmlspecialchars($mensagem_erro); ?></p>
                     <?php if ($usuario_ja_existe): ?>
-                        <a href="login.php" class="botao-login">Ir para a página de login</a>
+            <a href="login.php" class="botao-login">Ir para a página de acesso</a>
                     <?php endif; ?>
                 </div>
             <?php endif; ?>
 
+            <!-- Formulário didático de cadastro
+                 Dicas:
+                 - Usuário: mínimo de 3 letras
+                 - E-mail: formato válido (ex.: nome@dominio.com)
+                 - Senha: mínimo de 6 caracteres
+                 Erros comuns: senhas diferentes; o sistema valida e avisa. -->
             <form action="../controladores/processar_cadastro.php" method="post">
                 <div class="grupo-formulario">
                     <label for="usuario">Usuário:</label>
@@ -58,11 +67,11 @@ unset($_SESSION['erro_cadastro'], $_SESSION['usuario_ja_existe']);
                 </div>
                 <button type="submit">Cadastrar</button>
             </form>
-            <a href="login.php" class="link-login">Já tem uma conta? Faça Login</a>
+            <a href="login.php" class="link-login">Já tem uma conta? Entrar</a>
         </div>
     </main>
     <footer>
-        <p>&copy; 2025 Projeto PCC. Todos os direitos reservados.</p>
+        <p>&copy; 2025 origoidea. Todos os direitos reservados.</p>
     </footer>
 </body>
 </html>

@@ -8,6 +8,18 @@ if (file_exists($config_file)) {
     die('Erro: Arquivo de configuração não encontrado em ' . $config_file);
 }
 
+/*
+ Objetivo: permitir que o usuário atualize seu cadastro (nome, e-mail e opcionalmente a senha).
+ 
+ Diagrama mental:
+ [Sessão válida?] -> [Coletar dados] -> [Validar] -> [Checar duplicidade] -> [Atualizar] -> [Feedback]
+ 
+ Erros comuns e dicas:
+ - E-mail inválido: use um formato reconhecido (usuario@dominio.com).
+ - Troca de senha: confirme digitando duas vezes; senhas diferentes são bloqueadas.
+ - Concorrência: checamos se outro usuário já usa o mesmo e-mail/usuário.
+*/
+
 // Protege o script: verifica se o usuário está logado e se o método da requisição é POST.
 if (!isset($_SESSION['id_usuario']) || $_SERVER['REQUEST_METHOD'] !== 'POST') {
     header("Location: ../visualizadores/login.php");
@@ -28,7 +40,7 @@ if (empty($nome_usuario) || empty($email_usuario)) {
     exit;
 }
 
-// Validação do formato de e-mail
+// Validação do formato de e-mail (analogias: carta precisa de endereço válido)
 if (!filter_var($email_usuario, FILTER_VALIDATE_EMAIL)) {
     $_SESSION['mensagem_erro'] = "Por favor, forneça um endereço de e-mail válido.";
     header("Location: ../visualizadores/alterar-cadastro.php");
@@ -46,7 +58,7 @@ try {
         exit;
     }
 
-    // 3. Prepara a consulta de atualização.
+    // 3. Prepara a consulta de atualização (montamos apenas os campos que serão alterados)
     $partes_sql = ["nome_usuario = :nome_usuario", "email = :email"];
     $parametros = [':nome_usuario' => $nome_usuario, ':email' => $email_usuario, ':id' => $id_usuario];
 
@@ -57,7 +69,7 @@ try {
             header("Location: ../visualizadores/alterar-cadastro.php");
             exit;
         }
-        // Adiciona a senha criptografada à consulta.
+        // Adiciona a senha criptografada à consulta (como guardar no cofre)
         $partes_sql[] = "senha = :senha";
         $parametros[':senha'] = password_hash($nova_senha, PASSWORD_DEFAULT);
     }

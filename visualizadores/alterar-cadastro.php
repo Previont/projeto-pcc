@@ -1,14 +1,24 @@
 <?php
 session_start();
-// Inclui o arquivo de configuração da conexão com o banco de dados.
+
 $config_file = __DIR__ . '/../configurações/configuraçõesdeconexão.php';
 if (file_exists($config_file)) {
     require_once $config_file;
 } else {
     die('Erro: Arquivo de configuração não encontrado em ' . $config_file);
 }
+/*
+ Propósito: permitir ao usuário editar nome, e-mail e senha com validações.
+ Funcionalidade: carrega dados atuais, valida atualizações e mostra mensagens de feedback.
+ Relacionados: `controladores/processar_alteracao.php` (salvar alterações), `scripts/utils.js`.
+ Entradas: sessão do usuário e POST do formulário de edição.
+ Saídas: mensagens de sucesso/erro e atualização da sessão com novo nome.
+ Exemplos: bloquear e-mail inválido e avisar o usuário; atualizar senha com confirmação.
+ Boas práticas: revalidar duplicidade de e-mail/usuário e usar `password_hash`.
+ Armadilhas: esquecer de atualizar sessão após alteração do nome.
+*/
 
-// Se o usuário não estiver logado, redireciona para a página de login.
+
 if (!isset($_SESSION['id_usuario'])) {
     header("Location: login.php");
     exit;
@@ -18,24 +28,24 @@ $id_usuario = $_SESSION['id_usuario'];
 $usuario = null;
 
 try {
-    // Busca as informações atuais do usuário para preencher o formulário.
+
     $consulta = $pdo->prepare("SELECT nome_usuario, email FROM usuarios WHERE id = :id");
     $consulta->execute([':id' => $id_usuario]);
     $usuario = $consulta->fetch(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
-    // Em caso de erro, interrompe a execução e exibe uma mensagem.
+
     die("Erro ao carregar as informações do usuário para edição.");
 }
 
-// Se o usuário não for encontrado no banco de dados, interrompe a execução.
+
 if (!$usuario) {
     die("Usuário não encontrado.");
 }
 
-// Obtém mensagens de erro ou sucesso da sessão (se existirem).
+
 $mensagem_erro = $_SESSION['mensagem_erro'] ?? '';
 $mensagem_sucesso = $_SESSION['mensagem_sucesso'] ?? '';
-// Limpa as mensagens da sessão para que não sejam exibidas novamente.
+
 unset($_SESSION['mensagem_erro'], $_SESSION['mensagem_sucesso']);
 ?>
 <!DOCTYPE html>
@@ -44,7 +54,9 @@ unset($_SESSION['mensagem_erro'], $_SESSION['mensagem_sucesso']);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Alterar Cadastro</title>
+    <link rel="stylesheet" href="../estilizações/estilos-global.css">
     <link rel="stylesheet" href="../estilizações/estilos-alterar-cadastro.css">
+    <script src="../scripts/utils.js" defer></script>
 </head>
 <body>
     <div class="container">

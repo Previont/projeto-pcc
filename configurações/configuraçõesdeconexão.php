@@ -1,5 +1,9 @@
 <?php
 // Definições para a conexão com o banco de dados
+// Objetivo: criar uma conexão PDO segura e pronta para uso.
+// Termos:
+// - "DSN": string que descreve onde está o banco (host, nome e charset).
+// - "ATTR_ERRMODE": modo de erro (usaremos exceções para tratar problemas).
 $servidor = 'localhost';
 $banco_de_dados = 'cadastro_teste'; 
 $usuario_bd = 'root';
@@ -24,8 +28,8 @@ try {
     $pdo = new PDO($dsn, $usuario_bd, $senha_bd, $opcoes_pdo);
 } catch (\PDOException $excecao) {
     // Em caso de falha na conexão, lança uma nova exceção para interromper o script.
-    // É uma boa prática registrar o erro em um arquivo de log em um ambiente de produção.
-    // error_log('Erro de conexão com o banco de dados: ' . $excecao->getMessage());
+    // Dica: em produção, registre o erro (sem expor detalhes sensíveis ao usuário).
+    // Exemplo: error_log('Erro de conexão com o banco de dados: ' . $excecao->getMessage());
     throw new \PDOException($excecao->getMessage(), (int)$excecao->getCode());
 }
-?>
+ 

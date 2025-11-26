@@ -1,5 +1,23 @@
 <?php
 session_start();
+
+/*
+ Objetivo: processar o login do usuário com segurança e clareza.
+ 
+ Termos:
+ - "Sessão": uma memória temporária no servidor que guarda quem é você entre páginas.
+ - "PDO": biblioteca do PHP para conversar com o banco de dados de forma segura.
+ - "Hash de senha": versão embaralhada da senha; não é possível recuperar a senha original.
+
+ Diagrama mental:
+ [Formulário] -> [Validação] -> [Consulta ao banco] -> [Verificação de senha] -> [Sessão preenchida] -> [Redirecionar]
+
+ Erros comuns:
+ - Enviar formulário sem preencher campos: evitado com validação logo no início.
+ - Tentar SQL sem conexão válida: evitado com assertiva de PDO.
+ - Tratar senha em texto puro: usamos password_verify para comparar com o hash.
+*/
+
 // Inclui o arquivo de configuração da conexão com o banco de dados.
 $config_file = __DIR__ . '/../configurações/configuraçõesdeconexão.php';
 if (file_exists($config_file)) {
@@ -8,78 +26,69 @@ if (file_exists($config_file)) {
     die('Erro: Arquivo de configuração não encontrado em ' . $config_file);
 }
 
-// Verifica se o método da requisição é POST.
+// Utilitários compartilhados (ex.: redirect, assertPdo)
+require_once __DIR__ . '/../configurações/utils.php';
+
+// O login deve chegar via POST (enviado por formulário)
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Obtém o identificador de login (pode ser nome de usuário ou e-mail) e a senha.
-    $identificador_login = trim($_POST['usuario'] ?? '');
+    // Coleta os dados informados e remove espaços extras
+    $identificador_login = trim($_POST['usuario'] ?? ''); // pode ser usuário OU e-mail
     $senha_login = $_POST['senha'] ?? '';
 
-    // Valida se os campos não estão vazios.
-    if (empty($identificador_login) || empty($senha_login)) {
-        $_SESSION['erro'] = 'Por favor, preencha todos os campos.';
-        header("Location: ../visualizadores/login.php");
-        exit;
+    // Validação inicial: campos obrigatórios
+    if ($identificador_login === '' || $senha_login === '') {
+        redirect('../visualizadores/login.php', 'erro', 'Por favor, preencha todos os campos.');
     }
 
     try {
-        // Debug: Verificar conexão
-        if (!$pdo) {
-            throw new Exception('Conexão com banco de dados falhou');
-        }
+        // Confirma que $pdo está disponível e é uma conexão válida
+        assertPdo($pdo);
 
-        // Prepara a consulta para encontrar o usuário pelo nome de usuário ou e-mail.
-        $consulta = $pdo->prepare("SELECT id, nome_usuario, email, senha, tipo_usuario FROM usuarios WHERE nome_usuario = :usuario OR email = :email");
+        // Prepara a consulta para buscar o usuário por nome de usuário OU por e-mail
+        $consulta = $pdo->prepare("SELECT id, nome_usuario, email, senha, tipo_usuario, ativo FROM usuarios WHERE nome_usuario = :usuario OR email = :email");
 
-        // Executa a consulta com o identificador fornecido.
+        // Executa a consulta enviando os parâmetros de forma segura (evita SQL injection)
         $resultado = $consulta->execute([
             ':usuario' => $identificador_login,
             ':email' => $identificador_login
         ]);
 
         if (!$resultado) {
-            throw new Exception('Falha na execução da query');
+            throw new RuntimeException('Falha na execução da query');
         }
 
+        // Busca o primeiro usuário encontrado
         $usuario = $consulta->fetch();
 
         if ($usuario) {
-            // Se o usuário for encontrado, verifica se a senha está correta.
+            if ((int)($usuario['ativo'] ?? 1) === 0) {
+                redirect('../visualizadores/login.php', 'erro', 'Usuário desativado. Entre em contato com o administrador.');
+            }
+            // Compara a senha digitada com o hash armazenado (ex.: "porta trancada" vs "chave")
             if (password_verify($senha_login, $usuario['senha'])) {
-                // Se a senha estiver correta, armazena os dados do usuário na sessão.
+                // Preenche a sessão para reconhecer o usuário nas próximas páginas
                 $_SESSION['id_usuario'] = $usuario['id'];
                 $_SESSION['nome_usuario'] = $usuario['nome_usuario'];
                 $_SESSION['tipo_usuario'] = $usuario['tipo_usuario']; // 'admin' ou 'usuario'
 
-                // Redireciona para a página inicial do sistema.
+                // Exemplo prático: após logar, enviar para a página inicial
                 header("Location: ../visualizadores/paginainicial.php");
                 exit;
             } else {
-                // Se a senha for inválida, define uma mensagem de erro.
-                $_SESSION['erro'] = 'Senha inválida. Por favor, tente novamente.';
-                header("Location: ../visualizadores/login.php");
-                exit;
+                // Senha incorreta: dica — verifique Caps Lock e se cadastrou corretamente
+                redirect('../visualizadores/login.php', 'erro', 'Senha inválida. Por favor, tente novamente.');
             }
         } else {
-            // Se o usuário não for encontrado, define uma mensagem de erro.
-            $_SESSION['erro'] = 'Usuário não encontrado. Verifique o nome de usuário ou e-mail inserido.';
-            header("Location: ../visualizadores/login.php");
-            exit;
+            // Usuário não encontrado: talvez digitou e-mail em vez de usuário? Tente o outro campo.
+            redirect('../visualizadores/login.php', 'erro', 'Usuário não encontrado. Verifique o nome de usuário ou e-mail inserido.');
         }
-    } catch (PDOException $e) {
-        // Em caso de erro de banco de dados, armazena a mensagem e redireciona.
-        $_SESSION['erro'] = 'Erro de banco de dados: ' . $e->getMessage();
-        error_log('Erro de login: ' . $e->getMessage()); // Para registro de erros
-        header("Location: ../visualizadores/login.php");
-        exit;
-    } catch (Exception $e) {
-        // Em caso de outros erros, armazena a mensagem e redireciona.
-        $_SESSION['erro'] = 'Erro no sistema: ' . $e->getMessage();
-        error_log('Erro geral de login: ' . $e->getMessage()); // Para registro de erros
-        header("Location: ../visualizadores/login.php");
-        exit;
+    } catch (Throwable $e) {
+        // Tratamento geral: registra o erro e devolve uma mensagem amigável
+        error_log('Erro de login: ' . $e->getMessage());
+        redirect('../visualizadores/login.php', 'erro', 'Erro no sistema: ' . $e->getMessage());
     }
 } else {
-    // Se o acesso não for via POST, redireciona para a página de login.
+    // Acesso direto (GET): redireciona para a tela de login
     header("Location: ../visualizadores/login.php");
     exit;
 }

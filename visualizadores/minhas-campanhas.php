@@ -1,22 +1,30 @@
 <?php
 session_start();
 $config_file = __DIR__ . '/../configurações/configuraçõesdeconexão.php';
+if (file_exists($config_file)) { require_once $config_file; } else { die('Erro: Arquivo de configuração não encontrado em ' . $config_file); }
+require_once __DIR__ . '/../configurações/utils.php';
+$config_file = __DIR__ . '/../configurações/configuraçõesdeconexão.php';
 if (file_exists($config_file)) {
     require_once $config_file;
 } else {
     die('Erro: Arquivo de configuração não encontrado em ' . $config_file);
 }
 
-// Verifica se o usuário está logado, senão redireciona para a página de login.
+// Objetivo: listar campanhas do usuário com status e ações rápidas (ver, editar, excluir).
+// Diagrama mental:
+// [Sessão válida?] -> [Buscar campanhas] -> [Calcular progresso] -> [Render cards] -> [Ações]
+
 if (!isset($_SESSION['id_usuario'])) {
     header('Location: login.php');
     exit;
 }
 
+exigirUsuarioAtivo($pdo);
+
 $id_usuario = $_SESSION['id_usuario'];
 $nome_usuario = '';
 
-// Busca o nome do usuário para exibição no cabeçalho.
+
 try {
     $consulta_usuario = $pdo->prepare("SELECT nome_usuario FROM usuarios WHERE id = :id");
     $consulta_usuario->execute([':id' => $id_usuario]);
@@ -25,10 +33,10 @@ try {
         $nome_usuario = $usuario['nome_usuario'];
     }
 } catch (PDOException $e) {
-    // Em caso de erro, o nome do usuário simplesmente não será exibido.
+
 }
 
-// Busca as campanhas criadas pelo usuário.
+
 try {
     $sql = "SELECT id, titulo, descricao, meta_arrecadacao, valor_arrecadado, data_criacao 
             FROM campanhas 
@@ -39,10 +47,10 @@ try {
     $campanhas = $consulta_campanhas->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
     $campanhas = [];
-    // Em uma aplicação real, o erro seria registrado em logs.
+
 }
 
-// Recupera mensagens de erro ou sucesso
+
 $erro = $_SESSION['erro_campanha'] ?? '';
 $sucesso = $_SESSION['sucesso_campanha'] ?? '';
 unset($_SESSION['erro_campanha'], $_SESSION['sucesso_campanha']);
@@ -53,6 +61,7 @@ unset($_SESSION['erro_campanha'], $_SESSION['sucesso_campanha']);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Minhas Campanhas</title>
+    <link rel="stylesheet" href="../estilizações/estilos-global.css">
     <link rel="stylesheet" href="../estilizações/estilos-header.css">
     <link rel="stylesheet" href="../estilizações/estilos-minhas-campanhas.css">
     <link rel="stylesheet" href="../estilizações/tema-escuro.css">
@@ -61,7 +70,7 @@ unset($_SESSION['erro_campanha'], $_SESSION['sucesso_campanha']);
 <body>
     <header>
         <div class="logo">
-            <a href="paginainicial.php">Projeto PCC</a>
+            <a href="paginainicial.php">origoidea</a>
         </div>
         <div class="container-usuario">
             <?php if (!empty($nome_usuario)): ?>
@@ -80,6 +89,7 @@ unset($_SESSION['erro_campanha'], $_SESSION['sucesso_campanha']);
         </div>
     </header>
 
+    <!-- Conteúdo principal com listagem e ações -->
     <main class="container">
         <div class="cabecalho-pagina">
             <h1><i class="fas fa-heart"></i> Minhas Campanhas</h1>
@@ -105,11 +115,11 @@ unset($_SESSION['erro_campanha'], $_SESSION['sucesso_campanha']);
         <div class="container-campanhas">
             <?php if (!empty($campanhas)): ?>
                 <?php foreach ($campanhas as $campanha): 
-                    // Calcula a porcentagem para a barra de progresso
+
                     $porcentagem = ($campanha['meta_arrecadacao'] > 0) ? 
                         ($campanha['valor_arrecadado'] / $campanha['meta_arrecadacao']) * 100 : 0;
                     
-                    // Determina o status da campanha
+
                     $status = 'Ativa';
                     if ($porcentagem >= 100) {
                         $status = 'Meta Atingida';
@@ -176,7 +186,7 @@ unset($_SESSION['erro_campanha'], $_SESSION['sucesso_campanha']);
         </div>
     </main>
 
-    <!-- Modal de Confirmação de Exclusão -->
+    
     <div id="modal-exclusao" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -201,6 +211,7 @@ unset($_SESSION['erro_campanha'], $_SESSION['sucesso_campanha']);
         </div>
     </div>
 
+    <script src="../scripts/utils.js" defer></script>
     <script src="../scripts/script-menu.js" defer></script>
     <script>
         function confirmarExclusao(id, nome) {
@@ -213,7 +224,7 @@ unset($_SESSION['erro_campanha'], $_SESSION['sucesso_campanha']);
             document.getElementById('modal-exclusao').style.display = 'none';
         }
 
-        // Fechar modal ao clicar fora dele
+
         window.onclick = function(event) {
             const modal = document.getElementById('modal-exclusao');
             if (event.target === modal) {
@@ -221,7 +232,7 @@ unset($_SESSION['erro_campanha'], $_SESSION['sucesso_campanha']);
             }
         }
 
-        // Auto-hide mensagens de sucesso/erro
+
         setTimeout(function() {
             const mensagens = document.querySelectorAll('.mensagem');
             mensagens.forEach(function(mensagem) {

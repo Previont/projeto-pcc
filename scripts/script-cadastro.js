@@ -46,7 +46,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Validação em tempo real para email
     emailInput.addEventListener('input', function() {
         const isValid = validateEmail(this.value);
-        setError(this, document.getElementById('error-email'), isValid, 'Email inválido.');
+    setError(this, document.getElementById('error-email'), isValid, 'E-mail inválido.');
     });
 
     // Validação em tempo real para senha
@@ -80,8 +80,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         // Valida email
-        if (!validateEmail(emailInput.value)) {
-            setError(emailInput, document.getElementById('error-email'), false, 'Email inválido.');
+  if (!validateEmail(emailInput.value)) {
+    setError(emailInput, document.getElementById('error-email'), false, 'E-mail inválido.');
             isFormValid = false;
         }
 

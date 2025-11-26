@@ -1,6 +1,7 @@
 /**
- * Script para gerenciar itens da campanha na página de criação
+ * Script para gerenciar itens da campanha na página de edição
  * Funcionalidades: adicionar, remover, validar itens e upload de imagens
+ * Compatível com itens já existentes e novos itens
  */
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -14,71 +15,67 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     
-    // Adiciona o primeiro item automaticamente
-    adicionarItem();
-    
-    // Event listener para adicionar novo item
+
     adicionarItemBtn.addEventListener('click', function(e) {
         e.preventDefault();
         adicionarItem();
     });
     
-    // Event listener para remover itens (usando event delegation)
+
     listaItens.addEventListener('click', function(e) {
         if (e.target.closest('.btn-remover-item')) {
             e.preventDefault();
             const item = e.target.closest('.item-campanha');
             if (item) {
-                removerItem(item);
+                confirmarRemoverItem(item);
             }
         }
     });
     
-    // Event listeners para validação em tempo real
+
     listaItens.addEventListener('input', function(e) {
         if (e.target.type === 'number' && e.target.name.includes('itens[valor]')) {
             validarValorItem(e.target);
         }
     });
     
-    // Event listener para upload de imagens
+
     listaItens.addEventListener('change', function(e) {
         if (e.target.type === 'file' && e.target.name.includes('itens[imagem]')) {
             e.preventDefault();
             processarUploadImagem(e.target);
         }
     });
-
-    const imagemCampanhaInput = document.querySelector('input[name="campanha_imagem"]');
-    if (imagemCampanhaInput) {
-        imagemCampanhaInput.addEventListener('change', function(e) {
-            if (e.target.type === 'file') {
-                e.preventDefault();
-                processarUploadImagem(e.target);
-                const file = e.target.files && e.target.files[0];
-                const container = e.target.closest('.upload-container') || e.target.closest('.form-group');
-                const label = container ? container.querySelector('.file-label') : null;
-                if (label && file) {
-                    label.innerHTML = `<i class="fas fa-image"></i><span>${file.name}</span>`;
-                    label.title = file.name;
-                    label.classList.add('arquivo-selecionado');
-                }
-            }
-        });
-        const container = imagemCampanhaInput.closest('.upload-container');
-        const label = container ? container.querySelector('.file-label') : null;
-        if (label) {
-            label.addEventListener('click', function() {
-                imagemCampanhaInput.click();
-            });
-        }
-    }
     
-    // Validação do formulário antes do envio
-    const formulario = document.querySelector('form[action="../controladores/processar_campanha.php"]');
+
+    listaItens.addEventListener('change', function(e) {
+        if (e.target.type === 'checkbox' && e.target.name.includes('manter_imagem')) {
+            const item = e.target.closest('.item-campanha');
+            const containerUpload = item.querySelector('.upload-container');
+            
+            if (e.target.checked) {
+
+                const imagemAtual = item.querySelector('.imagem-atual');
+                if (imagemAtual) {
+                    imagemAtual.style.display = 'block';
+                }
+                containerUpload.style.opacity = '0.5';
+            } else {
+
+                const imagemAtual = item.querySelector('.imagem-atual');
+                if (imagemAtual) {
+                    imagemAtual.style.display = 'none';
+                }
+                containerUpload.style.opacity = '1';
+            }
+        }
+    });
+    
+
+    const formulario = document.querySelector('form[action="../controladores/processar_alteracao_campanha.php"]');
     if (formulario) {
         formulario.addEventListener('submit', function(e) {
-            // Valida todos os campos de valor dos itens
+
             const inputsValor = listaItens.querySelectorAll('input[name="itens[valor][]"]');
             let temErros = false;
             let mensagensErro = [];
@@ -98,17 +95,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 return false;
             }
             
-            // Mostra indicador de carregamento
+
             const btnSubmit = formulario.querySelector('button[type="submit"]');
             if (btnSubmit) {
-                btnSubmit.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processando...';
+                btnSubmit.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Salvando...';
                 btnSubmit.disabled = true;
             }
         });
     }
-    
-    // Adiciona estilos dinâmicos
-    adicionarEstilosDinamicos();
     
     /**
      * Adiciona um novo item à lista
@@ -123,14 +117,14 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
-        // Personaliza o título do item com número sequencial
+
         const numeroItem = listaItens.children.length + 1;
         const titulo = clone.querySelector('h4');
         if (titulo) {
             titulo.textContent = `Item ${numeroItem}`;
         }
         
-        // Atualiza IDs únicos para os inputs de arquivo
+
         const fileInput = clone.querySelector('input[type="file"]');
         const fileLabel = clone.querySelector('label[for]');
         if (fileInput && fileLabel) {
@@ -139,16 +133,16 @@ document.addEventListener('DOMContentLoaded', function() {
             fileLabel.setAttribute('for', novoId);
         }
         
-        // Adiciona o item à lista
+
         listaItens.appendChild(clone);
         
-        // Foca no primeiro campo do novo item
+
         const primeiroInput = item.querySelector('input[type="text"]');
         if (primeiroInput) {
             setTimeout(() => primeiroInput.focus(), 100);
         }
         
-        // Animação de entrada
+
         item.style.opacity = '0';
         item.style.transform = 'translateY(-20px)';
         setTimeout(() => {
@@ -157,7 +151,7 @@ document.addEventListener('DOMContentLoaded', function() {
             item.style.transform = 'translateY(0)';
         }, 50);
         
-        // Remove a transição após a animação
+
         setTimeout(() => {
             item.style.transition = '';
         }, 350);
@@ -165,30 +159,87 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     /**
-     * Remove um item da lista
+     * Confirma e remove um item da lista
+     * @param {Element} item - Elemento do item a ser removido
+     */
+    function confirmarRemoverItem(item) {
+        const itemId = item.getAttribute('data-item-id');
+        const titulo = item.querySelector('h4')?.textContent || 'este item';
+        
+        let mensagem = 'Tem certeza que deseja remover ' + titulo + '?';
+        if (itemId) {
+            mensagem += '\n\nEsta ação não pode ser desfeita.';
+        }
+        
+        const confirmar = confirm(mensagem);
+        if (!confirmar) return;
+        
+        if (itemId) {
+
+            marcarItemParaRemocao(item);
+        } else {
+
+            removerItem(item);
+        }
+    }
+    
+    /**
+     * Marca um item existente para remoção
+     * @param {Element} item - Elemento do item
+     */
+    function marcarItemParaRemocao(item) {
+
+        const inputHidden = document.createElement('input');
+        inputHidden.type = 'hidden';
+        inputHidden.name = 'itens[remover][]';
+        inputHidden.value = item.getAttribute('data-item-id');
+        
+
+        const formulario = item.closest('form');
+        if (formulario) {
+            formulario.appendChild(inputHidden);
+        }
+        
+
+        item.classList.add('item-removido');
+        item.style.opacity = '0.5';
+        item.style.backgroundColor = 'rgba(231, 76, 60, 0.1)';
+        
+
+        const inputs = item.querySelectorAll('input, textarea, button');
+        inputs.forEach(input => {
+            if (input.type !== 'hidden') {
+                input.disabled = true;
+            }
+        });
+        
+
+        const btnRemover = item.querySelector('.btn-remover-item');
+        if (btnRemover) {
+            btnRemover.innerHTML = '<i class="fas fa-undo"></i>';
+            btnRemover.title = 'Desfazer remoção';
+        }
+    }
+    
+    /**
+     * Remove um item da lista (apenas para novos itens)
      * @param {Element} item - Elemento do item a ser removido
      */
     function removerItem(item) {
         if (!item) return;
         
-        // Confirmação antes de remover (apenas se não for o último item)
-        if (listaItens.children.length > 1) {
-            const confirmar = confirm('Tem certeza que deseja remover este item?');
-            if (!confirmar) return;
-        }
-        
-        // Animação de saída
+
         item.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
         item.style.opacity = '0';
         item.style.transform = 'translateX(-20px)';
         
         setTimeout(() => {
-            // Remove o elemento após a animação
+
             if (item.parentNode) {
                 item.parentNode.removeChild(item);
             }
             
-            // Renumera os itens restantes
+
             renumerarItens();
         }, 300);
     }
@@ -198,10 +249,10 @@ document.addEventListener('DOMContentLoaded', function() {
      */
     function renumerarItens() {
         if (window.ItensCampanhaCore) {
-            window.ItensCampanhaCore.renumerarItens(listaItens, { skipRemoved: false });
+            window.ItensCampanhaCore.renumerarItens(listaItens, { skipRemoved: true });
             return;
         }
-        const itens = listaItens.querySelectorAll('.item-campanha');
+        const itens = listaItens.querySelectorAll('.item-campanha:not(.item-removido)');
         itens.forEach((item, index) => {
             const titulo = item.querySelector('h4');
             if (titulo) {
@@ -215,10 +266,7 @@ document.addEventListener('DOMContentLoaded', function() {
      * @param {Element} input - Campo de input do valor
      */
     function validarValorItem(input) {
-        if (window.ItensCampanhaCore) {
-            window.ItensCampanhaCore.validarValorItem(input);
-            return;
-        }
+        if (window.ItensCampanhaCore) { window.ItensCampanhaCore.validarValorItem(input); return; }
         const valor = parseFloat(input.value);
         const item = input.closest('.item-campanha');
         input.classList.remove('invalid', 'valid');
@@ -247,10 +295,7 @@ document.addEventListener('DOMContentLoaded', function() {
      * @param {HTMLInputElement} inputFile - Campo de input do arquivo
      */
     function processarUploadImagem(inputFile) {
-        if (window.ItensCampanhaCore) {
-            window.ItensCampanhaCore.processarUploadImagem(inputFile);
-            return;
-        }
+        if (window.ItensCampanhaCore) { window.ItensCampanhaCore.processarUploadImagem(inputFile); return; }
         const file = inputFile.files[0];
         const container = inputFile.closest('.upload-container') || inputFile.closest('.form-group');
         if (!file) return;
@@ -268,7 +313,6 @@ document.addEventListener('DOMContentLoaded', function() {
             criarPreview(container, file);
             exibirInfoArquivo(container, file);
             atualizarBotaoUpload(container, file);
-            definirImagemFundo(container, file);
             container.classList.add('has-success');
         }, 300);
     }
@@ -368,7 +412,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 preview.appendChild(img);
                 preview.appendChild(overlay);
                 
-                // Adiciona hover para mostrar overlay
+
                 preview.onmouseenter = function() {
                     overlay.style.opacity = '1';
                 };
@@ -380,7 +424,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const img = preview.querySelector('.preview-img');
             img.src = e.target.result;
             
-            // Adiciona preview se não existir
+
             if (!preview.parentNode) {
                 container.appendChild(preview);
             }
@@ -395,6 +439,7 @@ document.addEventListener('DOMContentLoaded', function() {
      * @param {File} file - Arquivo selecionado
      */
     function exibirInfoArquivo(container, file) {
+        if (window.ItensCampanhaCore) { window.ItensCampanhaCore.exibirInfoArquivo(container, file); return; }
         let info = container.querySelector('.file-info');
         
         if (!info) {
@@ -461,65 +506,9 @@ document.addEventListener('DOMContentLoaded', function() {
             label.innerHTML = `<i class="fas fa-image"></i><span>${nomeTruncado}</span>`;
             label.title = file.name; // Tooltip com nome completo
             
-            // Adiciona classe para indicar que tem arquivo
+
             label.classList.add('arquivo-selecionado');
         }
-    }
-    
-    /**
-     * Define a imagem como fundo do item da campanha
-     * @param {Element} container - Container do upload
-     * @param {File} file - Arquivo da imagem
-     */
-    function definirImagemFundo(container, file) {
-        const reader = new FileReader();
-        
-        reader.onload = function(e) {
-            // Encontra o item da campanha
-            const item = container.closest('.item-campanha');
-            if (!item) return;
-            
-            // Adiciona a classe CSS para estilos de imagem
-            item.classList.add('com-imagem');
-            
-            // Aplica a imagem como fundo
-            item.style.backgroundImage = `url(${e.target.result})`;
-            item.style.backgroundSize = 'cover';
-            item.style.backgroundPosition = 'center';
-            item.style.backgroundRepeat = 'no-repeat';
-            
-            // Adiciona overlay para melhorar legibilidade
-            const overlay = item.querySelector('.imagem-overlay') || document.createElement('div');
-            overlay.className = 'imagem-overlay';
-            overlay.style.position = 'absolute';
-            overlay.style.top = '0';
-            overlay.style.left = '0';
-            overlay.style.right = '0';
-            overlay.style.bottom = '0';
-            overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.6)';
-            overlay.style.zIndex = '1';
-            overlay.style.borderRadius = '6px';
-            
-            // Garante que o overlay seja o primeiro elemento
-            if (!overlay.parentNode) {
-                item.insertBefore(overlay, item.firstChild);
-            }
-            
-            // Ajusta z-index dos campos para ficar acima do overlay
-            const campos = item.querySelector('.item-campos');
-            if (campos) {
-                campos.style.position = 'relative';
-                campos.style.zIndex = '2';
-            }
-            
-            const header = item.querySelector('.item-header');
-            if (header) {
-                header.style.position = 'relative';
-                header.style.zIndex = '2';
-            }
-        };
-        
-        reader.readAsDataURL(file);
     }
     
     /**
@@ -586,7 +575,7 @@ document.addEventListener('DOMContentLoaded', function() {
         erroDiv.style.display = 'block';
         container.classList.add('has-error');
         
-        // Remove após 5 segundos
+
         setTimeout(() => {
             if (erroDiv.parentNode) {
                 erroDiv.remove();
@@ -608,44 +597,12 @@ document.addEventListener('DOMContentLoaded', function() {
         if (info) info.remove();
         if (input) input.value = '';
         
-        // Restaura o botão ao estado original
+
         const label = container.querySelector('.file-label');
         if (label) {
             label.innerHTML = '<i class="fas fa-cloud-upload-alt"></i><span>Escolher imagem</span>';
             label.title = '';
             label.classList.remove('arquivo-selecionado');
-        }
-        
-        // Remove a imagem de fundo do item
-        const item = container.closest('.item-campanha');
-        if (item) {
-            // Remove a classe CSS para estilos de imagem
-            item.classList.remove('com-imagem');
-            
-            // Remove todas as propriedades de background
-            item.style.backgroundImage = '';
-            item.style.backgroundSize = '';
-            item.style.backgroundPosition = '';
-            item.style.backgroundRepeat = '';
-            
-            // Remove overlay
-            const overlay = item.querySelector('.imagem-overlay');
-            if (overlay) {
-                overlay.remove();
-            }
-            
-            // Remove z-index especiais e restaura estilos
-            const campos = item.querySelector('.item-campos');
-            if (campos) {
-                campos.style.position = '';
-                campos.style.zIndex = '';
-            }
-            
-            const header = item.querySelector('.item-header');
-            if (header) {
-                header.style.position = '';
-                header.style.zIndex = '';
-            }
         }
         
         container.classList.remove('has-success', 'has-error');
@@ -665,66 +622,158 @@ document.addEventListener('DOMContentLoaded', function() {
         container.classList.remove('has-error');
     }
     
-    /**
-     * Adiciona estilos dinâmicos ao documento
-     */
-    function adicionarEstilosDinamicos() {
-        const style = document.createElement('style');
-        style.textContent = `
-            .item-campanha input.invalid {
-                border-color: #e74c3c !important;
-                box-shadow: 0 0 5px rgba(231, 76, 60, 0.3) !important;
-            }
-            
-            .item-campanha input.valid {
-                border-color: #27ae60 !important;
-                box-shadow: 0 0 5px rgba(39, 174, 96, 0.3) !important;
-            }
-            
-            .item-campanha {
-                transition: opacity 0.3s ease, transform 0.3s ease;
-            }
-            
-            .upload-container.has-error .file-label {
-                border-color: #e74c3c;
-                background-color: rgba(231, 76, 60, 0.1);
-            }
-            
-            .upload-container.has-success .file-label {
-                border-color: #27ae60;
-            }
-        `;
-        document.head.appendChild(style);
-    }
-});
 
-/**
- * Função auxiliar para obter dados dos itens (pode ser usada por outros scripts)
- */
-window.obterDadosItens = function() {
-    const listaItens = document.getElementById('lista-itens');
-    const itens = [];
-    
-    if (!listaItens) return itens;
-    
-    const itensElements = listaItens.querySelectorAll('.item-campanha');
-    
-    itensElements.forEach((item, index) => {
-        const nome = item.querySelector('input[name="itens[nome][]"]');
-        const descricao = item.querySelector('textarea[name="itens[descricao][]"]');
-        const valor = item.querySelector('input[name="itens[valor][]"]');
-        const imagem = item.querySelector('input[name="itens[imagem][]"]');
-        
-        if (nome && descricao && valor) {
-            itens.push({
-                indice: index,
-                nome: nome.value.trim(),
-                descricao: descricao.value.trim(),
-                valor: parseFloat(valor.value),
-                imagem: imagem ? imagem.files[0] : null
+    adicionarEstilosDinamicos();
+
+    const containers = listaItens.querySelectorAll('.upload-container');
+    containers.forEach(function(container){
+        const input = container.querySelector('input[type="file"]');
+        const label = container.querySelector('.file-label');
+        if (input && label) {
+            if (!input.id) {
+                input.id = 'file-upload-' + Date.now() + '-' + Math.random().toString(36).substr(2,9);
+            }
+            label.setAttribute('for', input.id);
+            label.addEventListener('click', function(e){
+                e.preventDefault();
+                input.click();
             });
         }
     });
-    
-    return itens;
-};
+
+    window.runUploadButtonTests = function(){
+        var resultados = [];
+        function assert(nome, cond){ resultados.push({nome:nome, ok:!!cond}); }
+        var testContainer1 = document.createElement('div');
+        testContainer1.className = 'upload-container';
+        var input1 = document.createElement('input');
+        input1.type = 'file';
+        var label1 = document.createElement('label');
+        label1.className = 'file-label';
+        testContainer1.appendChild(input1);
+        testContainer1.appendChild(label1);
+        document.body.appendChild(testContainer1);
+        var testContainer2 = document.createElement('div');
+        testContainer2.className = 'upload-container';
+        var input2 = document.createElement('input');
+        input2.type = 'file';
+        var label2 = document.createElement('label');
+        label2.className = 'file-label';
+        testContainer2.appendChild(input2);
+        testContainer2.appendChild(label2);
+        document.body.appendChild(testContainer2);
+        function wire(container){
+            var inp = container.querySelector('input[type="file"]');
+            var lab = container.querySelector('.file-label');
+            if (!inp.id) { inp.id = 'file-upload-' + Date.now() + '-' + Math.random().toString(36).substr(2,9); }
+            lab.setAttribute('for', inp.id);
+            lab.addEventListener('click', function(e){ e.preventDefault(); inp.click(); });
+        }
+        wire(testContainer1);
+        wire(testContainer2);
+        var clicks1 = 0, clicks2 = 0;
+        var origClick = HTMLInputElement.prototype.click;
+        HTMLInputElement.prototype.click = function(){ if (this===input1) clicks1++; if (this===input2) clicks2++; origClick.call(this); };
+        label1.click();
+        label2.click();
+        assert('label dispara input.click (1)', clicks1===1);
+        assert('label dispara input.click (2)', clicks2===1);
+        HTMLInputElement.prototype.click = origClick;
+        var fakeFile = new File([new Blob(['x'])],'teste.png',{type:'image/png'});
+        var fakeInput1 = { files:[fakeFile], closest:function(sel){ return testContainer1; }, value:'', type:'file', name:'itens[imagem][]' };
+        var fakeInput2 = { files:[fakeFile], closest:function(sel){ return testContainer2; }, value:'', type:'file', name:'itens[imagem][]' };
+        if (window.ItensCampanhaCore && typeof window.ItensCampanhaCore.processarUploadImagem==='function') {
+            window.ItensCampanhaCore.processarUploadImagem(fakeInput1);
+            window.ItensCampanhaCore.processarUploadImagem(fakeInput2);
+            var l1 = testContainer1.querySelector('.file-label');
+            var l2 = testContainer2.querySelector('.file-label');
+            assert('ambos setam arquivo-selecionado', l1.classList.contains('arquivo-selecionado') && l2.classList.contains('arquivo-selecionado'));
+            var p1 = testContainer1.querySelector('.preview-imagem');
+            var p2 = testContainer2.querySelector('.preview-imagem');
+            assert('ambos criam preview', !!p1 && !!p2);
+            assert('estado has-success idêntico', testContainer1.classList.contains('has-success') && testContainer2.classList.contains('has-success'));
+        } else {
+            assert('core disponível', false);
+        }
+        var out = document.createElement('div');
+        out.id = 'upload-tests-results';
+        out.style.position = 'fixed';
+        out.style.bottom = '10px';
+        out.style.right = '10px';
+        out.style.background = '#1f1f1f';
+        out.style.color = '#fff';
+        out.style.padding = '10px';
+        out.style.border = '1px solid #555';
+        out.style.borderRadius = '6px';
+        resultados.forEach(function(r){ var li = document.createElement('div'); li.textContent = (r.ok?'✔ ':'✖ ') + r.nome; li.style.marginBottom = '4px'; out.appendChild(li); });
+        document.body.appendChild(out);
+        return resultados;
+    };
+
+    try {
+        var params = new URLSearchParams(window.location.search);
+        if (params.get('runUploadTests') === '1') { window.runUploadButtonTests(); }
+    } catch (e) {}
+});
+
+/**
+ * Adiciona estilos dinâmicos ao documento
+ */
+function adicionarEstilosDinamicos() {
+    const style = document.createElement('style');
+    style.textContent = `
+        .item-campanha input.invalid {
+            border-color: #e74c3c !important;
+            box-shadow: 0 0 5px rgba(231, 76, 60, 0.3) !important;
+        }
+        
+        .item-campanha input.valid {
+            border-color: #27ae60 !important;
+            box-shadow: 0 0 5px rgba(39, 174, 96, 0.3) !important;
+        }
+        
+        .item-campanha {
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        
+        .item-campanha.item-removido {
+            border: 2px dashed #e74c3c;
+            background-color: rgba(231, 76, 60, 0.1);
+        }
+        
+        .upload-container.has-error .file-label {
+            border-color: #e74c3c;
+            background-color: rgba(231, 76, 60, 0.1);
+        }
+        
+        .upload-container.has-success .file-label {
+            border-color: #27ae60;
+        }
+        
+        .imagem-atual {
+            margin-bottom: 10px;
+        }
+        
+        .info-imagem {
+            color: #42a5f5;
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+        
+        .opcoes-imagem {
+            margin-top: 5px;
+        }
+        
+        .checkbox-manter {
+            display: flex;
+            align-items: center;
+            font-size: 12px;
+            color: #E0E0E0;
+        }
+        
+        .checkbox-manter input[type="checkbox"] {
+            margin-right: 5px;
+        }
+    `;
+    document.head.appendChild(style);
+}

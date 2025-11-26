@@ -1,7 +1,7 @@
 body {
     font-family: sans-serif;
-    background-color: #000000; /* Fundo preto */
-    color: #E0E0E0; /* Texto claro */
+    background-color: var(--color-bg);
+    color: var(--color-text-soft);
     padding: 20px;
 }
 
@@ -9,10 +9,10 @@ body {
     max-width: 600px;
     margin: 40px auto;
     padding: 40px;
-    background-color: #1E1E1E; /* Fundo do container escuro */
+    background-color: var(--color-surface);
     border-radius: 8px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-    border: 1px solid #333; /* Borda sutil */
+    border: 1px solid var(--color-border);
 }
 
 h2 {
@@ -35,23 +35,23 @@ input[type="email"],
 input[type="password"] {
     width: 100%;
     padding: 12px;
-    border: 1px solid #444; /* Borda do input mais escura */
+    border: 1px solid var(--color-border);
     border-radius: 4px;
     box-sizing: border-box;
-    background-color: #2C2C2C; /* Fundo do input escuro */
-    color: #E0E0E0; /* Texto do input claro */
+    background-color: var(--color-input-bg);
+    color: var(--color-text-soft);
 }
 
 input:focus {
     outline: none;
-    border-color: #42a5f5; /* Destaque azul claro no foco */
+    border-color: var(--color-primary);
 }
 
 form button {
     width: 100%;
     padding: 10px;
-    background-color: var(--cor-primaria);
-    color: white;
+    background-color: var(--color-primary);
+    color: var(--color-text);
     border: none;
     border-radius: 5px;
     cursor: pointer;
@@ -60,14 +60,14 @@ form button {
 }
 
 form button:hover {
-    background-color: var(--cor-primaria-hover);
+    background-color: var(--color-primary-hover);
 }
 
 .message {
     display: block;
     text-align: center;
     margin-top: 20px;
-    color: #BDBDBD; /* Texto cinza claro */
+    color: var(--color-text-muted);
     text-decoration: none;
 }
 

@@ -1,14 +1,24 @@
 <?php
-// Inicia a sessão para poder acessá-la.
-session_start();
 
-// Remove todas as variáveis de sessão.
+session_start();
+/*
+ Propósito: encerrar a sessão atual e redirecionar para a página inicial.
+ Funcionalidade: limpa dados de sessão e destrói a sessão.
+ Relacionados: `visualizadores/login.php`, `controladores/processar_login.php`.
+ Entradas: nenhuma.
+ Saídas: redirecionamento para `paginainicial.php`.
+ Exemplos: clicar em "Sair" no menu do usuário.
+ Boas práticas: sempre chamar `session_destroy` e invalidar dados sensíveis.
+ Armadilhas: manter dados no navegador — limpe cookies se necessário (fora deste escopo).
+*/
+
+
 $_SESSION = array();
 
-// Destrói a sessão.
+
 session_destroy();
 
-// Redireciona o usuário para a página inicial.
+
 header("Location: paginainicial.php");
 exit;
 ?>

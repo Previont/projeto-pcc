@@ -1,29 +1,45 @@
 <?php
 session_start();
 $config_file = __DIR__ . '/../configurações/configuraçõesdeconexão.php';
+if (file_exists($config_file)) { require_once $config_file; } else { die('Erro: Arquivo de configuração não encontrado em ' . $config_file); }
+require_once __DIR__ . '/../configurações/utils.php';
+$config_file = __DIR__ . '/../configurações/configuraçõesdeconexão.php';
 if (file_exists($config_file)) {
     require_once $config_file;
 } else {
     die('Erro: Arquivo de configuração não encontrado em ' . $config_file);
 }
+/*
+ Propósito: página de configurações do usuário (dados pessoais e endereços).
+ Funcionalidade: CRUD de endereços com criação automática de tabela se ausente; atualização de dados básicos.
+ Relacionados: `scripts/script-configuracoes.js` (UX e CEP), `configurações/utils.php`.
+ Entradas: formulários POST para adicionar/editar/excluir endereços; sessão do usuário.
+ Saídas: mensagens de sucesso/erro e conteúdo HTML das seções.
+ Exemplos: preenchimento automático de endereço via CEP e cache no front.
+ Boas práticas: validar entrada, usar prepared statements e feedback visual ao usuário.
+ Armadilhas: depender de criação automática de tabela — considerar migrações formais.
+*/
 
 if (!isset($_SESSION['id_usuario'])) {
     header("Location: login.php");
     exit;
 }
 
+exigirUsuarioAtivo($pdo);
+
 $id_usuario = $_SESSION['id_usuario'];
 $mensagem = '';
 
-// Ações para Endereços com verificação automática de estrutura
+
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao_formulario_endereco'])) {
     try {
-        // Verifica se a tabela enderecos existe
+
         $stmt = $pdo->query("SHOW TABLES LIKE 'enderecos'");
         $tabela_existe = $stmt->rowCount() > 0;
         
         if (!$tabela_existe) {
-            // Tenta criar a tabela automaticamente
+
             try {
                 $pdo->exec("
                     CREATE TABLE enderecos (
@@ -83,57 +99,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao_formulario_ender
     }
 }
 
-// Ações para Métodos de Pagamento com verificação automática de estrutura
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao_formulario_pagamento'])) {
-    try {
-        if ($_POST['acao_formulario_pagamento'] === 'adicionar_pagamento') {
-            $nome_titular = trim($_POST['nome_titular']);
-            $numero_cartao = preg_replace('/\s+/', '', $_POST['numero_cartao']);
-            $data_validade = trim($_POST['data_validade']);
-            
-            $ultimos_digitos = substr($numero_cartao, -4);
-            $cartao_hash = password_hash($numero_cartao, PASSWORD_DEFAULT);
 
-            // Verifica se a coluna cartao_hash existe na tabela
-            $stmt = $pdo->query("SHOW COLUMNS FROM metodos_pagamento LIKE 'cartao_hash'");
-            $coluna_existe = $stmt->rowCount() > 0;
 
-            if ($coluna_existe) {
-                // Se a coluna existe, usa a estrutura completa
-                $stmt = $pdo->prepare("INSERT INTO metodos_pagamento (id_usuario, nome_titular, ultimos_digitos, data_validade, cartao_hash) VALUES (?, ?, ?, ?, ?)");
-                $stmt->execute([$id_usuario, $nome_titular, $ultimos_digitos, $data_validade, $cartao_hash]);
-                $mensagem = "Método de pagamento adicionado com sucesso!";
-            } else {
-                // Se a coluna não existe, tenta criá-la automaticamente
-                try {
-                    $pdo->exec("ALTER TABLE metodos_pagamento ADD COLUMN cartao_hash VARCHAR(255) NOT NULL AFTER data_validade");
-                    error_log("Coluna cartao_hash adicionada automaticamente à tabela metodos_pagamento");
-                    
-                    // Agora insere com a nova estrutura
-                    $stmt = $pdo->prepare("INSERT INTO metodos_pagamento (id_usuario, nome_titular, ultimos_digitos, data_validade, cartao_hash) VALUES (?, ?, ?, ?, ?)");
-                    $stmt->execute([$id_usuario, $nome_titular, $ultimos_digitos, $data_validade, $cartao_hash]);
-                    $mensagem = "Método de pagamento adicionado com sucesso! (Coluna criada automaticamente)";
-                } catch (PDOException $e) {
-                    // Fallback: insere sem a coluna cartao_hash
-                    $stmt = $pdo->prepare("INSERT INTO metodos_pagamento (id_usuario, nome_titular, ultimos_digitos, data_validade) VALUES (?, ?, ?, ?)");
-                    $stmt->execute([$id_usuario, $nome_titular, $ultimos_digitos, $data_validade]);
-                    $mensagem = "Método de pagamento adicionado com sucesso! (Modo compatível)";
-                }
-            }
-
-        } elseif ($_POST['acao_formulario_pagamento'] === 'excluir_pagamento') {
-            $id_pagamento = $_POST['id_pagamento'];
-            $stmt = $pdo->prepare("DELETE FROM metodos_pagamento WHERE id=? AND id_usuario=?");
-            $stmt->execute([$id_pagamento, $id_usuario]);
-            $mensagem = "Método de pagamento removido com sucesso!";
-        }
-    } catch (PDOException $e) {
-        $mensagem = "Erro ao processar método de pagamento: " . $e->getMessage();
-        error_log("Erro no processamento de pagamento: " . $e->getMessage());
-    }
-}
-
-// Ação para atualizar dados do usuário
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['atualizar_usuario'])) {
     $nome_usuario = trim($_POST['nome_usuario']);
     $email = trim($_POST['email']);
@@ -149,13 +116,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['atualizar_usuario']))
     }
 }
 
-// Busca de dados com tratamento de erros
+
 $info_usuario = [];
 $enderecos_usuario = [];
-$pagamentos_usuario = [];
 
 try {
-    // Busca dados do usuário
+
     $consulta_usuario = $pdo->prepare("SELECT nome_usuario, email, data_registro FROM usuarios WHERE id = ?");
     $consulta_usuario->execute([$id_usuario]);
     $info_usuario = $consulta_usuario->fetch() ?: [];
@@ -165,12 +131,12 @@ try {
 }
 
 try {
-    // Busca endereços do usuário com verificação automática de estrutura
+
     $stmt = $pdo->query("SHOW TABLES LIKE 'enderecos'");
     $tabela_enderecos_existe = $stmt->rowCount() > 0;
     
     if (!$tabela_enderecos_existe) {
-        // Tenta criar a tabela automaticamente
+
         try {
             $pdo->exec("
                 CREATE TABLE enderecos (
@@ -209,24 +175,6 @@ try {
     error_log("Erro na consulta de endereços: " . $e->getMessage());
 }
 
-try {
-    // Busca métodos de pagamento do usuário (verifica estrutura da tabela primeiro)
-    $stmt = $pdo->query("SHOW COLUMNS FROM metodos_pagamento LIKE 'cartao_hash'");
-    $coluna_hash_existe = $stmt->rowCount() > 0;
-    
-    if ($coluna_hash_existe) {
-        $consulta_pagamentos = $pdo->prepare("SELECT id, nome_titular, ultimos_digitos, data_validade, cartao_hash FROM metodos_pagamento WHERE id_usuario = ?");
-    } else {
-        $consulta_pagamentos = $pdo->prepare("SELECT id, nome_titular, ultimos_digitos, data_validade FROM metodos_pagamento WHERE id_usuario = ?");
-    }
-    
-    $consulta_pagamentos->execute([$id_usuario]);
-    $pagamentos_usuario = $consulta_pagamentos->fetchAll();
-} catch (PDOException $e) {
-    $pagamentos_usuario = [];
-    $mensagem = "Erro ao carregar métodos de pagamento: " . $e->getMessage();
-    error_log("Erro na consulta de métodos de pagamento: " . $e->getMessage());
-}
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -234,16 +182,18 @@ try {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Configurações</title>
+    <link rel="stylesheet" href="../estilizações/estilos-global.css">
     <link rel="stylesheet" href="../estilizações/estilos-configuracoes.css">
     <link rel="stylesheet" href="../estilizações/estilos-header.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <script src="../scripts/utils.js"></script>
 </head>
 <body>
     <header>
         <div class="logo">
-            <a href="paginainicial.php">Projeto PCC</a>
+            <a href="paginainicial.php">origoidea</a>
         </div>
         <nav>
             <a href="meu-perfil.php"><i class="fas fa-user"></i> Meu Perfil</a>
@@ -258,7 +208,7 @@ try {
             <ul>
                 <li><a href="#" class="active" data-target="conta">Conta</a></li>
                 <li><a href="#" data-target="edicao">Edição da conta</a></li>
-                <li><a href="#" data-target="pagamento">Métodos de pagamento</a></li>
+                
                 <li><a href="#" data-target="endereco">Endereço</a></li>
             </ul>
         </aside>
@@ -268,15 +218,15 @@ try {
                 <div class="mensagem"><?php echo htmlspecialchars($mensagem); ?></div>
             <?php endif; ?>
 
-            <!-- Seção Conta -->
+            
             <section id="conta" class="secao-conteudo active">
                 <h2>Visão Geral da Conta</h2>
                 <p><strong>Nome de usuário:</strong> <?php echo htmlspecialchars($info_usuario['nome_usuario']); ?></p>
-                <p><strong>Email:</strong> <?php echo htmlspecialchars($info_usuario['email']); ?></p>
+            <p><strong>E-mail:</strong> <?php echo htmlspecialchars($info_usuario['email']); ?></p>
                 <p><strong>Membro desde:</strong> <?php echo date("d/m/Y", strtotime($info_usuario['data_registro'])); ?></p>
             </section>
 
-            <!-- Seção Edição da Conta -->
+            
             <section id="edicao" class="secao-conteudo">
                 <h2>Editar Informações da Conta</h2>
                 <form action="configuracoes.php" method="post">
@@ -286,51 +236,16 @@ try {
                         <input type="text" id="nome_usuario" name="nome_usuario" value="<?php echo htmlspecialchars($info_usuario['nome_usuario']); ?>">
                     </div>
                     <div class="form-group">
-                        <label for="email">Email:</label>
+                <label for="email">E-mail:</label>
                         <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($info_usuario['email']); ?>">
                     </div>
                     <button type="submit">Salvar Alterações</button>
                 </form>
             </section>
 
-            <!-- Seção Métodos de Pagamento -->
-            <section id="pagamento" class="secao-conteudo">
-                <h2>Métodos de Pagamento</h2>
-                <div class="lista-pagamentos">
-                    <?php foreach ($pagamentos_usuario as $pagamento): ?>
-                        <div class="item-pagamento">
-                            <span>Cartão com final <?php echo htmlspecialchars($pagamento['ultimos_digitos']); ?></span>
-                            <form action="configuracoes.php" method="post" style="display:inline;">
-                                <input type="hidden" name="id_pagamento" value="<?php echo $pagamento['id']; ?>">
-                                <input type="hidden" name="acao_formulario_pagamento" value="excluir_pagamento">
-                                <button type="submit" class="btn-excluir">Excluir</button>
-                            </form>
-                        </div>
-                    <?php endforeach; ?>
-                </div>
-                <button id="btn-adicionar-pagamento">Adicionar Cartão</button>
-                <div id="container-formulario-pagamento" style="display:none;">
-                    <form action="configuracoes.php" method="post">
-                        <input type="hidden" name="acao_formulario_pagamento" value="adicionar_pagamento">
-                        <div class="form-group">
-                            <label for="nome_titular">Nome do Titular:</label>
-                            <input type="text" id="nome_titular" name="nome_titular" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="numero_cartao">Número do Cartão:</label>
-                            <input type="text" id="numero_cartao" name="numero_cartao" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="data_validade">Data de Validade (MM/AA):</label>
-                            <input type="text" id="data_validade" name="data_validade" placeholder="MM/AA" required>
-                        </div>
-                        <button type="submit">Salvar Cartão</button>
-                        <button type="button" id="cancelar-edicao-pagamento">Cancelar</button>
-                    </form>
-                </div>
-            </section>
+            
 
-            <!-- Seção Endereço -->
+            
             <section id="endereco" class="secao-conteudo">
                 <h2>Seus Endereços</h2>
                 <div class="lista-enderecos">

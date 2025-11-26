@@ -1,37 +1,52 @@
 <?php
 session_start();
 $config_file = __DIR__ . '/../configurações/configuraçõesdeconexão.php';
+if (file_exists($config_file)) { require_once $config_file; } else { die('Erro: Arquivo de configuração não encontrado em ' . $config_file); }
+require_once __DIR__ . '/../configurações/utils.php';
+$config_file = __DIR__ . '/../configurações/configuraçõesdeconexão.php';
 if (file_exists($config_file)) {
     require_once $config_file;
 } else {
     die('Erro: Arquivo de configuração não encontrado em ' . $config_file);
 }
+/*
+ Propósito: exibir dados básicos do perfil do usuário logado.
+ Funcionalidade: busca nome, e-mail e data de registro; mostra cabeçalho com navegação.
+ Relacionados: `visualizadores/alterar-cadastro.php` (edição), `scripts/script-menu.js`.
+ Entradas: sessão do usuário; consultas ao banco para dados.
+ Saídas: HTML com informações do perfil e links relacionados.
+ Exemplos: exibir data de cadastro formatada.
+ Boas práticas: sempre verificar sessão e tratar erros de banco com mensagens simples.
+ Armadilhas: não expor dados sensíveis do usuário na página.
+*/
 
-// 1. Verifica se o usuário está logado.
+
 if (!isset($_SESSION['id_usuario'])) {
     header("Location: login.php");
     exit;
 }
 
+exigirUsuarioAtivo($pdo);
+
 $id_usuario = $_SESSION['id_usuario'];
 $usuario = null;
 
-// 2. Busca os dados do usuário no banco de dados.
+
 try {
     $consulta = $pdo->prepare("SELECT nome_usuario, email, data_registro FROM usuarios WHERE id = :id");
     $consulta->execute([':id' => $id_usuario]);
     $usuario = $consulta->fetch(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
-    // Em uma aplicação real, o erro seria registrado em logs.
+
     die("Erro ao buscar informações do perfil.");
 }
 
-// Se o usuário não for encontrado, encerra a execução.
+
 if (!$usuario) {
     die("Usuário não encontrado.");
 }
 
-// Formata a data de cadastro para um formato mais amigável.
+
 $data_cadastro = date("d/m/Y", strtotime($usuario['data_registro']));
 
 ?>
@@ -41,6 +56,7 @@ $data_cadastro = date("d/m/Y", strtotime($usuario['data_registro']));
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Meu Perfil - <?php echo htmlspecialchars($usuario['nome_usuario']); ?></title>
+    <link rel="stylesheet" href="../estilizações/estilos-global.css">
     <link rel="stylesheet" href="../estilizações/estilos-header.css">
     <link rel="stylesheet" href="../estilizações/estilos-perfil.css">
     <link rel="stylesheet" href="../estilizações/tema-escuro.css">
@@ -49,7 +65,7 @@ $data_cadastro = date("d/m/Y", strtotime($usuario['data_registro']));
 <body>
     <header>
         <div class="logo">
-            <a href="paginainicial.php">Projeto PCC</a>
+            <a href="paginainicial.php">origoidea</a>
         </div>
         <div class="container-usuario">
             <?php if (isset($usuario) && $usuario): ?>
@@ -93,6 +109,7 @@ $data_cadastro = date("d/m/Y", strtotime($usuario['data_registro']));
         </div>
     </main>
 
+    <script src="../scripts/utils.js" defer></script>
     <script src="../scripts/script-menu.js" defer></script>
 </body>
 </html>
